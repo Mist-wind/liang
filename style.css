@@ -48,23 +48,22 @@ body::-webkit-scrollbar { display: none; }
     background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.4) 100%);
 }
 
-/* ======== 顶部胶囊导航栏 ======== */
-.top-nav {
+/* ======== 底部导航栏 ======== */
+.bottom-nav {
     position: fixed;
-    top: 30px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(30, 30, 30, 0.6);
+    background: rgba(30, 30, 30, 0.7);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    padding: 6px;
+    padding: 8px 12px;
     border-radius: 50px;
     display: flex;
     gap: 5px;
     z-index: 1000;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    transition: all 0.3s ease;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.4);
 }
 
 /* 导航按钮默认状态 */
@@ -873,22 +872,58 @@ body::-webkit-scrollbar { display: none; }
         font-size: 1.5rem;
     }
     
-    .top-nav {
-        top: 20px;
-        padding: 4px;
+    .bottom-nav {
+        bottom: 15px;
+        padding: 6px 10px;
+        gap: 3px;
+        max-width: 95vw;
+        overflow-x: auto;
     }
     
     .nav-btn {
-        padding: 6px 16px;
+        padding: 6px 14px;
         font-size: 12px;
     }
 
     .progress-container {
-        padding: 20px;
+        width: 95%;
+        max-width: none;
+        padding: 12px;
     }
 
     .project-name {
         font-size: 1.1rem;
+    }
+
+    .project-tabs {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .tab-btn {
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+
+    .timeline-items {
+        gap: 4px;
+    }
+
+    .timeline-content h4 {
+        font-size: 0.65rem;
+    }
+
+    .timeline-content p {
+        font-size: 0.55rem;
+        -webkit-line-clamp: 1;
+    }
+
+    .info-label {
+        font-size: 0.7rem;
+    }
+
+    .info-value {
+        font-size: 0.8rem;
     }
 }
 
@@ -904,7 +939,69 @@ body::-webkit-scrollbar { display: none; }
 
     .progress-header {
         flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .edit-toggle-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .bottom-nav {
+        bottom: 10px;
+        border-radius: 30px;
+        justify-content: center;
+    }
+
+    .nav-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .progress-container {
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .main-title {
+        font-size: 1.3rem !important;
+    }
+
+    .info-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .info-item {
+        width: 100%;
+    }
+
+    .timeline-item {
+        min-width: 80px;
+        padding-top: 18px;
+    }
+
+    .timeline-content {
+        padding: 6px 4px;
+    }
+
+    .add-progress-btn {
+        font-size: 11px;
+        padding: 8px 16px;
+    }
+}
+
+/* 横屏手机适配 */
+@media (max-width: 480px) and (orientation: landscape) {
+    .bottom-nav {
+        bottom: 5px;
+        padding: 4px 8px;
+    }
+
+    .nav-btn {
+        padding: 6px 10px;
+        font-size: 10px;
     }
 }
