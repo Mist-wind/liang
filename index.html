@@ -3,145 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liang | 开发者作品集</title>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background-color: #050505;
-            color: #fff;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* 每一层都是全屏高度 */
-        section {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #1a1a1a;
-        }
-
-        /* 背景装饰：增加高级感 */
-        .bg-gradient {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #111 0%, #050505 100%);
-            z-index: -1;
-        }
-
-        /* 第一屏：个人介绍 */
-        .hero-title { font-size: 3.5rem; letter-spacing: 5px; color: #d4af37; margin-bottom: 10px; }
-        .hero-sub { font-size: 1.2rem; color: #888; }
-
-        /* 应用展示卡片 */
-        .app-box {
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            backdrop-filter: blur(10px);
-            transition: 0.5s;
-        }
-
-        .app-box:hover {
-            border-color: #d4af37;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
-        }
-
-        .app-icon { width: 80px; height: 80px; border-radius: 18px; margin-bottom: 20px; }
-        .app-name { font-size: 2rem; margin-bottom: 15px; color: #fff; }
-        .app-desc { font-size: 1rem; color: #ccc; line-height: 1.8; margin-bottom: 30px; }
-
-        /* 按钮样式 */
-        .btn {
-            display: inline-block;
-            padding: 12px 35px;
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: #000;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .btn:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); }
-
-        /* 滚动提示灯 */
-        .scroll-indicator {
-            position: absolute;
-            bottom: 30px;
-            animation: bounce 2s infinite;
-            color: #d4af37;
-            font-size: 0.8rem;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
-    </style>
+    <title>Liang | 沉浸式作品集</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <section>
-        <div class="bg-gradient"></div>
-        <div data-aos="zoom-out" data-aos-duration="1500">
-            <h1 class="hero-title">LIANG</h1>
-            <p class="hero-sub">独立开发者 / 创造改变生活的数字产品</p>
-        </div>
-        <div class="scroll-indicator">向下滑动查看作品 ↓</div>
-    </section>
+    <nav class="top-nav">
+        <a href="#section1" class="nav-btn active" data-target="section1">首 页</a>
+        <a href="#section2" class="nav-btn" data-target="section2">黑果短剧</a>
+        <a href="#section3" class="nav-btn" data-target="section3">关于我</a>
+    </nav>
 
-    <section>
-        <div class="app-box" data-aos="fade-up" data-aos-duration="1000">
-            <img src="https://via.placeholder.com/80/221100/d4af37?text=HG" class="app-icon" alt="Logo">
-            <h2 class="app-name">黑果短剧</h2>
-            <p class="app-desc">
-                这是一款为你量身定制的私有化短剧平台。<br>
-                我们将复杂的本地视频库转化为优雅的流媒体体验，<br>
-                支持 4K 原画、极速解码，让追剧随心所欲。
-            </p>
-            <a href="http://47.122.119.75" target="_blank" class="btn">立即前往体验</a>
-        </div>
-    </section>
-
-    <section>
-        <div class="app-box" data-aos="fade-right" data-aos-duration="1000">
-            <div style="font-size: 50px; margin-bottom: 20px;">🚀</div>
-            <h2 class="app-name">下一款力作</h2>
-            <p class="app-desc">
-                正在打磨中的全新工具，旨在解决开发者工作流中的痛点。<br>
-                预计 2026 年夏季上线。
-            </p>
-            <a href="#" class="btn" style="background: #333; color: #888;">敬请期待</a>
-        </div>
-    </section>
-
-    <section>
-        <div data-aos="flip-up" data-aos-duration="1000">
-            <h2 style="margin-bottom: 30px;">关注我的动态</h2>
-            <div style="display: flex; gap: 20px;">
-                <a href="https://github.com/2550214996lw-rgb" class="btn">GitHub</a>
-                <a href="#" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">联系我</a>
+    <main class="scroll-container">
+        
+        <section id="section1" class="page-section">
+            <div class="content-box">
+                <h1 class="main-title">LIANG</h1>
+                <p class="sub-title">独立开发者 / 创造沉浸式数字体验</p>
+                <div class="scroll-hint">向下滚动发现更多 ↓</div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({
-            once: false, // 每次滚动到这里都触发动画
-            mirror: true // 向上滚动时也会触发
-        });
-    </script>
+        <section id="section2" class="page-section">
+            <div class="app-card">
+                <div class="app-logo">🎬</div>
+                <h2 class="app-title">黑果短剧 v1.1.3</h2>
+                <p class="app-desc">私有化短剧平台，将本地短剧库变成专属流媒体。<br>随时随地，高清畅享。</p>
+                <a href="http://47.122.119.75" target="_blank" class="download-btn">前往下载 Android 客户端</a>
+            </div>
+        </section>
+
+        <section id="section3" class="page-section">
+            <div class="content-box">
+                <h2 class="app-title">探索更多</h2>
+                <p class="app-desc">欢迎访问我的代码仓库，了解更多正在开发中的项目。</p>
+                <a href="https://github.com/2550214996lw-rgb" target="_blank" class="download-btn git-btn">访问 GitHub</a>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
