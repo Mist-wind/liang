@@ -3,11 +3,12 @@ const navBtns = document.querySelectorAll('.nav-btn');
 const sections = document.querySelectorAll('.page-section');
 const scrollContainer = document.querySelector('.scroll-container');
 
-// 背景图片数组 - 四个图片对应四个页面
+// 背景图片数组 - 五个图片对应五个页面
 const backgroundImages = [
     '首页.png',
     '黑果短剧.png',
     '桌面宠物.png',
+    '更多.png',
     '更多.png'
 ];
 
@@ -90,12 +91,16 @@ scrollContainer.addEventListener('scroll', () => {
             // 激活当前区域的元素动画
             const contentBox = section.querySelector('.content-box');
             const appCard = section.querySelector('.app-card');
+            const progressContainer = section.querySelector('.progress-container');
             
             if (contentBox) {
                 contentBox.classList.add('visible');
             }
             if (appCard) {
                 appCard.classList.add('visible');
+            }
+            if (progressContainer) {
+                progressContainer.classList.add('visible');
             }
         }
     });
@@ -189,3 +194,191 @@ document.head.appendChild(style);
 
 // 页面加载完成后初始化
 window.addEventListener('load', init);
+
+// ======== 项目进度管理功能 ========
+
+// 获取进度相关元素
+const progressContainer = document.querySelector('.progress-container');
+const editToggleBtn = document.getElementById('editToggle');
+const progressList = document.getElementById('progressList');
+const addProgressBtn = document.getElementById('addProgressBtn');
+const progressModal = document.getElementById('progressModal');
+const modalTitle = document.getElementById('modalTitle');
+const projectNameInput = document.getElementById('projectName');
+const projectDescInput = document.getElementById('projectDesc');
+const projectProgressInput = document.getElementById('projectProgress');
+
+let isEditMode = false;
+let currentEditId = null;
+let projects = [];
+
+// 从本地存储加载项目数据
+function loadProjects() {
+    const savedProjects = localStorage.getItem('projects');
+    if (savedProjects) {
+        projects = JSON.parse(savedProjects);
+        renderProjects();
+    }
+}
+
+// 保存项目数据到本地存储
+function saveProjects() {
+    localStorage.setItem('projects', JSON.stringify(projects));
+}
+
+// 渲染项目列表
+function renderProjects() {
+    progressList.innerHTML = '';
+    
+    projects.forEach(project => {
+        const projectItem = createProjectItem(project);
+        progressList.appendChild(projectItem);
+    });
+}
+
+// 创建项目元素
+function createProjectItem(project) {
+    const item = document.createElement('div');
+    item.className = 'progress-item';
+    item.setAttribute('data-id', project.id);
+    
+    item.innerHTML = `
+        <div class="progress-info">
+            <h3 class="project-name">${project.name}</h3>
+            <p class="project-desc">${project.desc}</p>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: ${project.progress}%">
+                <span class="progress-text">${project.progress}%</span>
+            </div>
+        </div>
+        <div class="progress-actions">
+            <button class="progress-edit-btn" onclick="editProgress(${project.id})">编辑</button>
+            <button class="progress-delete-btn" onclick="deleteProgress(${project.id})">删除</button>
+        </div>
+    `;
+    
+    return item;
+}
+
+// 切换编辑模式
+editToggleBtn.addEventListener('click', function() {
+    isEditMode = !isEditMode;
+    this.classList.toggle('active');
+    progressContainer.classList.toggle('edit-mode');
+    this.textContent = isEditMode ? '完成编辑' : '编辑模式';
+});
+
+// 添加新项目
+addProgressBtn.addEventListener('click', function() {
+    currentEditId = null;
+    modalTitle.textContent = '添加新项目';
+    projectNameInput.value = '';
+    projectDescInput.value = '';
+    projectProgressInput.value = '';
+    progressModal.classList.add('active');
+});
+
+// 编辑项目
+function editProgress(id) {
+    const project = projects.find(p => p.id === id);
+    if (project) {
+        currentEditId = id;
+        modalTitle.textContent = '编辑项目';
+        projectNameInput.value = project.name;
+        projectDescInput.value = project.desc;
+        projectProgressInput.value = project.progress;
+        progressModal.classList.add('active');
+    }
+}
+
+// 删除项目
+function deleteProgress(id) {
+    if (confirm('确定要删除这个项目吗？')) {
+        projects = projects.filter(p => p.id !== id);
+        saveProjects();
+        renderProjects();
+    }
+}
+
+// 关闭模态框
+function closeModal() {
+    progressModal.classList.remove('active');
+    currentEditId = null;
+}
+
+// 保存项目
+function saveProgress() {
+    const name = projectNameInput.value.trim();
+    const desc = projectDescInput.value.trim();
+    const progress = parseInt(projectProgressInput.value);
+    
+    if (!name || isNaN(progress) || progress < 0 || progress > 100) {
+        alert('请填写完整的项目信息，进度必须在0-100之间');
+        return;
+    }
+    
+    if (currentEditId) {
+        // 编辑现有项目
+        const projectIndex = projects.findIndex(p => p.id === currentEditId);
+        if (projectIndex !== -1) {
+            projects[projectIndex].name = name;
+            projects[projectIndex].desc = desc;
+            projects[projectIndex].progress = progress;
+        }
+    } else {
+        // 添加新项目
+        const newId = projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1;
+        projects.push({
+            id: newId,
+            name: name,
+            desc: desc,
+            progress: progress
+        });
+    }
+    
+    saveProjects();
+    renderProjects();
+    closeModal();
+}
+
+// 点击模态框外部关闭
+progressModal.addEventListener('click', function(e) {
+    if (e.target === progressModal) {
+        closeModal();
+    }
+});
+
+// 初始化项目数据
+function initProjects() {
+    loadProjects();
+    
+    // 如果没有保存的项目，使用默认数据
+    if (projects.length === 0) {
+        projects = [
+            {
+                id: 1,
+                name: '黑果短剧',
+                desc: '私有化短剧平台',
+                progress: 85
+            },
+            {
+                id: 2,
+                name: 'AI桌面宠物',
+                desc: '智能陪伴应用',
+                progress: 45
+            },
+            {
+                id: 3,
+                name: '新项目',
+                desc: '待定项目',
+                progress: 20
+            }
+        ];
+        saveProjects();
+        renderProjects();
+    }
+}
+
+// 在页面加载时初始化项目
+window.addEventListener('load', initProjects);
