@@ -6,9 +6,9 @@ const scrollContainer = document.querySelector('.scroll-container');
 // 背景图片数组 - 五个图片对应五个页面
 const backgroundImages = [
     '首页.png',
+    '更多.png',
     '黑果短剧.png',
     '桌面宠物.png',
-    '更多.png',
     '更多.png'
 ];
 
@@ -197,8 +197,8 @@ window.addEventListener('load', init);
 
 // ======== 项目进度管理功能 ========
 
-// 项目数据
-const projectsData = [
+// 默认项目数据
+const defaultProjects = [
     {
         id: 1,
         name: '黑果短剧',
@@ -211,14 +211,7 @@ const projectsData = [
             { name: '开发阶段', desc: '核心功能开发、API集成', date: '2026-04-01', status: 'active' },
             { name: '测试阶段', desc: '功能测试、性能测试', date: '2026-04-30', status: 'pending' },
             { name: '上线阶段', desc: '部署、发布、监控', date: '2026-05-15', status: 'pending' }
-        ],
-        tasks: [
-            { name: '完成用户登录功能', status: 'completed' },
-            { name: '实现视频播放器', status: 'completed' },
-            { name: '开发推荐算法', status: 'active' },
-            { name: '优化加载速度', status: 'pending' }
-        ],
-        stats: { total: 12, completed: 8, active: 4, pending: 2 }
+        ]
     },
     {
         id: 2,
@@ -232,14 +225,7 @@ const projectsData = [
             { name: '开发阶段', desc: '核心功能开发、API集成', date: '2026-04-05', status: 'active' },
             { name: '测试阶段', desc: '功能测试、性能测试', date: '2026-05-10', status: 'pending' },
             { name: '上线阶段', desc: '部署、发布、监控', date: '2026-05-25', status: 'pending' }
-        ],
-        tasks: [
-            { name: '完成宠物形象设计', status: 'completed' },
-            { name: '实现基础交互功能', status: 'completed' },
-            { name: '开发语音识别', status: 'active' },
-            { name: '优化AI对话能力', status: 'pending' }
-        ],
-        stats: { total: 8, completed: 3, active: 2, pending: 3 }
+        ]
     },
     {
         id: 3,
@@ -253,31 +239,74 @@ const projectsData = [
             { name: '开发阶段', desc: '核心功能开发、API集成', date: '2026-05-01', status: 'pending' },
             { name: '测试阶段', desc: '功能测试、性能测试', date: '2026-05-15', status: 'pending' },
             { name: '上线阶段', desc: '部署、发布、监控', date: '2026-05-30', status: 'pending' }
-        ],
-        tasks: [
-            { name: '完成需求文档', status: 'completed' },
-            { name: '技术选型', status: 'completed' },
-            { name: '原型设计', status: 'active' },
-            { name: '架构设计', status: 'pending' }
-        ],
-        stats: { total: 6, completed: 2, active: 1, pending: 3 }
+        ]
     }
 ];
 
+let projectsData = [];
+let currentProjectId = 1;
+let editingProjectId = null;
+
+// 从本地存储加载数据或使用默认数据
+function loadProjects() {
+    const saved = localStorage.getItem('projectsData');
+    if (saved) {
+        try {
+            projectsData = JSON.parse(saved);
+        } catch(e) {
+            projectsData = JSON.parse(JSON.stringify(defaultProjects));
+        }
+    } else {
+        projectsData = JSON.parse(JSON.stringify(defaultProjects));
+    }
+}
+
+// 保存数据到本地存储
+function saveProjects() {
+    localStorage.setItem('projectsData', JSON.stringify(projectsData));
+}
+
 // 标签页切换功能
 function setupProjectTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
+    renderTabs();
     
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // 移除所有标签页的active类
-            tabBtns.forEach(b => b.classList.remove('active'));
-            // 添加当前标签页的active类
-            this.classList.add('active');
-            
-            const projectId = parseInt(this.dataset.project);
-            updateProjectDetails(projectId);
-        });
+    document.getElementById('projectTabs').addEventListener('click', function(e) {
+        if (e.target.classList.contains('tab-btn')) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentProjectId = parseInt(e.target.dataset.project);
+            updateProjectDetails(currentProjectId);
+        }
+    });
+}
+
+// 渲染标签页
+function renderTabs() {
+    const tabsContainer = document.getElementById('projectTabs');
+    tabsContainer.innerHTML = '';
+    
+    projectsData.forEach(project => {
+        const tabBtn = document.createElement('button');
+        tabBtn.className = `tab-btn ${project.id === currentProjectId ? 'active' : ''}`;
+        tabBtn.dataset.project = project.id;
+        tabBtn.textContent = project.name;
+        
+        if (progressContainer.classList.contains('edit-mode')) {
+            const deleteIcon = document.createElement('span');
+            deleteIcon.innerHTML = ' ×';
+            deleteIcon.style.marginLeft = '5px';
+            deleteIcon.style.color = '#ef4444';
+            deleteIcon.style.cursor = 'pointer';
+            deleteIcon.onclick = (e) => {
+                e.stopPropagation();
+                if (confirm(`确定要删除项目"${project.name}"吗？`)) {
+                    deleteProject(project.id);
+                }
+            };
+            tabBtn.appendChild(deleteIcon);
+        }
+        
+        tabsContainer.appendChild(tabBtn);
     });
 }
 
@@ -286,20 +315,12 @@ function updateProjectDetails(projectId) {
     const project = projectsData.find(p => p.id === projectId);
     if (!project) return;
     
-    // 更新项目基本信息
     document.getElementById('detailProjectName').textContent = project.name;
     document.getElementById('detailProjectDesc').textContent = project.desc;
     document.getElementById('detailProjectProgress').textContent = project.progress + '%';
     document.getElementById('detailProjectOwner').textContent = project.owner;
     
-    // 更新时间线
     updateTimeline(project.timeline);
-    
-    // 更新任务列表
-    updateTasks(project.tasks);
-    
-    // 更新进度摘要
-    updateProgressSummary(project.stats);
 }
 
 // 更新时间线
@@ -307,61 +328,77 @@ function updateTimeline(timeline) {
     const timelineContainer = document.querySelector('.timeline-items');
     timelineContainer.innerHTML = '';
     
-    timeline.forEach(item => {
+    timeline.forEach((item, index) => {
         const timelineItem = document.createElement('div');
         timelineItem.className = `timeline-item ${item.status}`;
         
-        timelineItem.innerHTML = `
+        let html = `
             <div class="timeline-marker"></div>
             <div class="timeline-content">
                 <h4>${item.name}</h4>
                 <p>${item.desc}</p>
                 <span class="timeline-date">${item.date}</span>
-            </div>
         `;
+        
+        // 编辑模式下显示状态切换按钮
+        if (progressContainer.classList.contains('edit-mode')) {
+            html += `<div style="margin-top:5px;">
+                <select onchange="changeStageStatus(${projectId}, ${index}, this.value)" 
+                    style="background:#333;color:#fff;border:1px solid #555;padding:3px;border-radius:4px;font-size:11px;width:100%;">
+                    <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>已完成</option>
+                    <option value="active" ${item.status === 'active' ? 'selected' : ''}>进行中</option>
+                    <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>未开始</option>
+                </select>
+            </div>`;
+        }
+        
+        html += `</div></div>`;
+        timelineItem.innerHTML = html;
         
         timelineContainer.appendChild(timelineItem);
     });
 }
 
-// 更新任务列表
-function updateTasks(tasks) {
-    const tasksContainer = document.querySelector('.tasks-list');
-    tasksContainer.innerHTML = '';
-    
-    tasks.forEach(task => {
-        const taskItem = document.createElement('div');
-        taskItem.className = `task-item ${task.status}`;
-        
-        taskItem.innerHTML = `
-            <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''}>
-            <span>${task.name}</span>
-        `;
-        
-        tasksContainer.appendChild(taskItem);
-    });
-}
+// 切换阶段状态
+window.changeStageStatus = function(projectId, stageIndex, newStatus) {
+    const project = projectsData.find(p => p.id === projectId);
+    if (project && project.timeline[stageIndex]) {
+        project.timeline[stageIndex].status = newStatus;
+        saveProjects();
+        updateProjectDetails(projectId);
+    }
+};
 
-// 更新进度摘要
-function updateProgressSummary(stats) {
-    const summaryItems = document.querySelectorAll('.summary-item');
-    const labels = ['总任务', '已完成', '进行中', '未开始'];
-    const values = [stats.total, stats.completed, stats.active, stats.pending];
+// 删除项目
+function deleteProject(id) {
+    projectsData = projectsData.filter(p => p.id !== id);
+    saveProjects();
     
-    summaryItems.forEach((item, index) => {
-        item.querySelector('.summary-number').textContent = values[index];
-        item.querySelector('.summary-label').textContent = labels[index];
-    });
+    if (currentProjectId === id && projectsData.length > 0) {
+        currentProjectId = projectsData[0].id;
+    }
+    
+    renderTabs();
+    updateProjectDetails(currentProjectId);
 }
 
 // 编辑模式切换
 const editToggle = document.getElementById('editToggle');
+const editProjectBtn = document.getElementById('editProjectBtn');
 const progressContainer = document.querySelector('.progress-container');
 
 editToggle.addEventListener('click', function() {
     this.classList.toggle('active');
     progressContainer.classList.toggle('edit-mode');
     this.textContent = this.classList.contains('active') ? '完成编辑' : '编辑模式';
+    editProjectBtn.style.display = this.classList.contains('active') ? 'block' : 'none';
+    renderTabs();
+    updateProjectDetails(currentProjectId);
+});
+
+// 编辑项目按钮
+editProjectBtn.addEventListener('click', function() {
+    openModal(true);
 });
 
 // 模态框操作
@@ -372,19 +409,78 @@ const projectNameInput = document.getElementById('projectName');
 const projectDescInput = document.getElementById('projectDesc');
 const projectProgressInput = document.getElementById('projectProgress');
 
-function openModal() {
+function openModal(isEdit = false) {
+    editingProjectId = isEdit ? currentProjectId : null;
+    
+    if (isEdit) {
+        const project = projectsData.find(p => p.id === currentProjectId);
+        document.getElementById('modalTitle').textContent = '编辑项目';
+        projectNameInput.value = project.name;
+        projectDescInput.value = project.desc;
+        projectProgressInput.value = project.progress;
+    } else {
+        document.getElementById('modalTitle').textContent = '添加新项目';
+        projectNameInput.value = '';
+        projectDescInput.value = '';
+        projectProgressInput.value = '0';
+    }
+    
     progressModal.classList.add('active');
 }
 
 function closeModal() {
     progressModal.classList.remove('active');
-    projectNameInput.value = '';
-    projectDescInput.value = '';
-    projectProgressInput.value = '0';
+    editingProjectId = null;
 }
 
+// 保存项目
+window.saveProgress = function() {
+    const name = projectNameInput.value.trim();
+    const desc = projectDescInput.value.trim();
+    const progress = parseInt(projectProgressInput.value);
+    
+    if (!name || isNaN(progress) || progress < 0 || progress > 100) {
+        alert('请填写完整的项目信息，进度必须在0-100之间');
+        return;
+    }
+    
+    if (editingProjectId) {
+        // 编辑现有项目
+        const project = projectsData.find(p => p.id === editingProjectId);
+        if (project) {
+            project.name = name;
+            project.desc = desc;
+            project.progress = progress;
+        }
+    } else {
+        // 添加新项目
+        const newId = projectsData.length > 0 ? Math.max(...projectsData.map(p => p.id)) + 1 : 1;
+        projectsData.push({
+            id: newId,
+            name: name,
+            desc: desc,
+            progress: progress,
+            owner: 'Liang',
+            timeline: [
+                { name: '规划阶段', desc: '项目需求分析', date: new Date().toISOString().split('T')[0], status: 'completed' },
+                { name: '设计阶段', desc: 'UI/UX设计', date: '', status: 'pending' },
+                { name: '开发阶段', desc: '功能开发', date: '', status: 'pending' },
+                { name: '测试阶段', desc: '测试验证', date: '', status: 'pending' },
+                { name: '上线阶段', desc: '部署上线', date: '', status: 'pending' }
+            ]
+        });
+        currentProjectId = newId;
+    }
+    
+    saveProjects();
+    renderTabs();
+    updateProjectDetails(currentProjectId);
+    closeModal();
+};
+
 closeModalBtn.addEventListener('click', closeModal);
-document.getElementById('addProgressBtn').addEventListener('click', openModal);
+
+document.getElementById('addProgressBtn').addEventListener('click', () => openModal(false));
 
 // 点击模态框外部关闭
 progressModal.addEventListener('click', function(e) {
@@ -395,9 +491,13 @@ progressModal.addEventListener('click', function(e) {
 
 // 初始化项目进度页面
 function initProjectProgress() {
+    loadProjects();
     setupProjectTabs();
-    // 默认显示第一个项目
-    updateProjectDetails(1);
+    
+    if (projectsData.length > 0) {
+        currentProjectId = projectsData[0].id;
+        updateProjectDetails(currentProjectId);
+    }
 }
 
 // 在页面加载时初始化项目进度

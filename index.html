@@ -10,10 +10,10 @@
 
     <nav class="top-nav">
         <a href="#section1" class="nav-btn active" data-target="section1">首页</a>
-            <a href="#section2" class="nav-btn" data-target="section2">黑果短剧</a>
-            <a href="#section3" class="nav-btn" data-target="section3">AI桌面宠物</a>
-            <a href="#section4" class="nav-btn" data-target="section4">未来计划</a>
-            <a href="#section5" class="nav-btn" data-target="section5">项目进度</a>
+        <a href="#section2" class="nav-btn" data-target="section2">项目进度</a>
+        <a href="#section3" class="nav-btn" data-target="section3">黑果短剧</a>
+        <a href="#section4" class="nav-btn" data-target="section4">AI桌面宠物</a>
+        <a href="#section5" class="nav-btn" data-target="section5">未来计划</a>
     </nav>
 
     <main class="scroll-container">
@@ -27,35 +27,13 @@
         </section>
 
         <section id="section2" class="page-section">
-            <div class="app-card">
-                <div class="app-logo">🎬</div>
-                <h2 class="app-title">黑果短剧</h2>
-                <p class="app-desc">私有化短剧平台，本地短剧库变专属流媒体</p>
-                <a href="http://47.122.119.75" target="_blank" class="download-btn">下载 Android 客户端</a>
-            </div>
-        </section>
-
-        <section id="section3" class="page-section">
-            <div class="app-card">
-                <div class="app-logo">🐱</div>
-                <h2 class="app-title">AI桌面宠物</h2>
-                <p class="app-desc">智能陪伴，个性化互动，让桌面更有趣</p>
-                <a href="#" target="_blank" class="download-btn git-btn">了解更多</a>
-            </div>
-        </section>
-
-        <section id="section4" class="page-section">
-            <div class="content-box">
-                <h1 class="main-title">未来计划</h1>
-                <p class="sub-title">探索更多创新项目，持续提升用户体验</p>
-            </div>
-        </section>
-
-        <section id="section5" class="page-section">
             <div class="progress-container">
                 <div class="progress-header">
                     <h1 class="main-title">项目进度</h1>
-                    <button class="edit-toggle-btn" id="editToggle">编辑模式</button>
+                    <div style="display:flex;gap:8px;">
+                        <button class="edit-toggle-btn" id="editProjectBtn" style="display:none;">编辑项目</button>
+                        <button class="edit-toggle-btn" id="editToggle">编辑模式</button>
+                    </div>
                 </div>
                 <div class="project-tabs" id="projectTabs">
                     <button class="tab-btn active" data-project="1">黑果短剧</button>
@@ -131,6 +109,32 @@
                         </div>
                     </div>
                 </div>
+                <button class="add-progress-btn" id="addProgressBtn">+ 添加新项目</button>
+            </div>
+        </section>
+
+        <section id="section3" class="page-section">
+            <div class="app-card">
+                <div class="app-logo">🎬</div>
+                <h2 class="app-title">黑果短剧</h2>
+                <p class="app-desc">私有化短剧平台，本地短剧库变专属流媒体</p>
+                <a href="http://47.122.119.75" target="_blank" class="download-btn">下载 Android 客户端</a>
+            </div>
+        </section>
+
+        <section id="section4" class="page-section">
+            <div class="app-card">
+                <div class="app-logo">🐱</div>
+                <h2 class="app-title">AI桌面宠物</h2>
+                <p class="app-desc">智能陪伴，个性化互动，让桌面更有趣</p>
+                <a href="#" target="_blank" class="download-btn git-btn">了解更多</a>
+            </div>
+        </section>
+
+        <section id="section5" class="page-section">
+            <div class="content-box">
+                <h1 class="main-title">未来计划</h1>
+                <p class="sub-title">探索更多创新项目，持续提升用户体验</p>
             </div>
         </section>
 
