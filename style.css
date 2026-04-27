@@ -338,13 +338,13 @@ body::-webkit-scrollbar { display: none; }
 
 /* ======== 项目进度页面样式 ======== */
 .progress-container {
-    width: 90%;
-    max-width: 800px;
+    width: 80%;
+    max-width: 600px;
     background: rgba(20, 20, 20, 0.8);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 40px;
+    border-radius: 15px;
+    padding: 30px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     opacity: 0;
     transform: translateY(30px) translateX(50px);
