@@ -3,145 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>开发者主页</title>
+    <title>Liang | 开发者作品集</title>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        /* 基础页面设置：暗黑风格 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            background-color: #0d0d0d;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            background-color: #050505;
+            color: #fff;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 每一层都是全屏高度 */
+        section {
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-        }
-
-        /* 主容器 */
-        .container {
-            width: 90%;
-            max-width: 800px;
-            padding: 40px 20px;
-        }
-
-        /* 个人介绍区域 */
-        .profile-section {
-            text-align: center;
-            margin-bottom: 50px;
-            animation: fadeInDown 1s ease;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px solid #d4af37; /* 黑金风格的金色边框 */
-            margin-bottom: 20px;
-            object-fit: cover;
-        }
-
-        .profile-name {
-            font-size: 2em;
-            margin: 0 0 10px 0;
-            letter-spacing: 2px;
-        }
-
-        .profile-bio {
-            color: #888888;
-            font-size: 1.1em;
-            margin: 0;
-        }
-
-        /* 应用卡片网格布局 */
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            animation: fadeInUp 1s ease;
-        }
-
-        /* 单个应用卡片样式 */
-        .app-card {
-            background-color: #1a1a1a;
-            border: 1px solid #333333;
-            border-radius: 16px;
-            padding: 30px 20px;
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #1a1a1a;
         }
 
-        /* 卡片悬停特效（跳转感） */
-        .app-card:hover {
-            transform: translateY(-8px);
+        /* 背景装饰：增加高级感 */
+        .bg-gradient {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #111 0%, #050505 100%);
+            z-index: -1;
+        }
+
+        /* 第一屏：个人介绍 */
+        .hero-title { font-size: 3.5rem; letter-spacing: 5px; color: #d4af37; margin-bottom: 10px; }
+        .hero-sub { font-size: 1.2rem; color: #888; }
+
+        /* 应用展示卡片 */
+        .app-box {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(10px);
+            transition: 0.5s;
+        }
+
+        .app-box:hover {
             border-color: #d4af37;
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
         }
 
-        .app-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
+        .app-icon { width: 80px; height: 80px; border-radius: 18px; margin-bottom: 20px; }
+        .app-name { font-size: 2rem; margin-bottom: 15px; color: #fff; }
+        .app-desc { font-size: 1rem; color: #ccc; line-height: 1.8; margin-bottom: 30px; }
+
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
         }
 
-        .app-title {
+        .btn:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); }
+
+        /* 滚动提示灯 */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            animation: bounce 2s infinite;
             color: #d4af37;
-            font-size: 1.3em;
-            margin: 0 0 10px 0;
+            font-size: 0.8rem;
         }
 
-        .app-desc {
-            color: #aaaaaa;
-            font-size: 0.9em;
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        /* 简单的进场动画 */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="profile-section">
-            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=developer" alt="头像" class="profile-avatar">
-            <h1 class="profile-name">Liang</h1>
-            <p class="profile-bio">独立开发者 | 专注于沉浸式流媒体与应用开发</p>
+    <section>
+        <div class="bg-gradient"></div>
+        <div data-aos="zoom-out" data-aos-duration="1500">
+            <h1 class="hero-title">LIANG</h1>
+            <p class="hero-sub">独立开发者 / 创造改变生活的数字产品</p>
         </div>
+        <div class="scroll-indicator">向下滑动查看作品 ↓</div>
+    </section>
 
-        <div class="apps-grid">
-            
-            <a href="http://47.122.119.75" target="_blank" class="app-card">
-                <div class="app-icon">🎬</div>
-                <h2 class="app-title">黑果短剧</h2>
-                <p class="app-desc">私有化短剧平台，将本地短剧库变成专属流媒体。随时随地，高清畅享。</p>
-            </a>
-
-            <a href="#" target="_blank" class="app-card">
-                <div class="app-icon">🚀</div>
-                <h2 class="app-title">待定应用</h2>
-                <p class="app-desc">下一款改变世界的应用正在开发中，敬请期待。</p>
-            </a>
-
-            <a href="https://github.com/2550214996lw-rgb" target="_blank" class="app-card">
-                <div class="app-icon">💻</div>
-                <h2 class="app-title">我的 GitHub</h2>
-                <p class="app-desc">查看我的更多开源项目和技术分享。</p>
-            </a>
-
+    <section>
+        <div class="app-box" data-aos="fade-up" data-aos-duration="1000">
+            <img src="https://via.placeholder.com/80/221100/d4af37?text=HG" class="app-icon" alt="Logo">
+            <h2 class="app-name">黑果短剧</h2>
+            <p class="app-desc">
+                这是一款为你量身定制的私有化短剧平台。<br>
+                我们将复杂的本地视频库转化为优雅的流媒体体验，<br>
+                支持 4K 原画、极速解码，让追剧随心所欲。
+            </p>
+            <a href="http://47.122.119.75" target="_blank" class="btn">立即前往体验</a>
         </div>
-    </div>
+    </section>
 
+    <section>
+        <div class="app-box" data-aos="fade-right" data-aos-duration="1000">
+            <div style="font-size: 50px; margin-bottom: 20px;">🚀</div>
+            <h2 class="app-name">下一款力作</h2>
+            <p class="app-desc">
+                正在打磨中的全新工具，旨在解决开发者工作流中的痛点。<br>
+                预计 2026 年夏季上线。
+            </p>
+            <a href="#" class="btn" style="background: #333; color: #888;">敬请期待</a>
+        </div>
+    </section>
+
+    <section>
+        <div data-aos="flip-up" data-aos-duration="1000">
+            <h2 style="margin-bottom: 30px;">关注我的动态</h2>
+            <div style="display: flex; gap: 20px;">
+                <a href="https://github.com/2550214996lw-rgb" class="btn">GitHub</a>
+                <a href="#" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">联系我</a>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: false, // 每次滚动到这里都触发动画
+            mirror: true // 向上滚动时也会触发
+        });
+    </script>
 </body>
 </html>
