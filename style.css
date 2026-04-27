@@ -11,8 +11,42 @@ body {
     color: #fff;
     /* 隐藏基础滚动条，做沉浸式效果 */
     scrollbar-width: none; 
+    overflow: hidden;
 }
 body::-webkit-scrollbar { display: none; }
+
+/* ======== 背景图层 ======== */
+.background-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.8s ease-out, opacity 0.8s ease;
+    opacity: 1;
+    z-index: -1;
+}
+
+.background-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.4) 100%);
+}
 
 /* ======== 顶部胶囊导航栏 ======== */
 .top-nav {
@@ -30,6 +64,7 @@ body::-webkit-scrollbar { display: none; }
     z-index: 1000;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
 }
 
 /* 导航按钮默认状态 */
@@ -41,14 +76,35 @@ body::-webkit-scrollbar { display: none; }
     font-size: 14px;
     font-weight: 500;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-/* 导航按钮悬浮和激活状态 (视频里的高亮效果) */
-.nav-btn:hover { color: #fff; }
+/* 导航按钮悬浮和激活状态 */
+.nav-btn:hover {
+    color: #fff;
+    transform: translateY(-2px);
+}
+
 .nav-btn.active {
     background: #2a2a2a;
     color: #d4af37; /* 黑果短剧的金色 */
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.nav-btn.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.nav-btn.active:hover::before {
+    left: 100%;
 }
 
 /* ======== 页面主体滚动区 ======== */
@@ -56,6 +112,7 @@ body::-webkit-scrollbar { display: none; }
     height: 100vh;
     overflow-y: scroll;
     scroll-snap-type: y mandatory; /* 实现滚轮一格格吸附的效果 */
+    scroll-behavior: smooth;
 }
 
 .page-section {
@@ -65,28 +122,103 @@ body::-webkit-scrollbar { display: none; }
     justify-content: center;
     align-items: center;
     position: relative;
+    overflow: hidden;
 }
 
 /* 第一屏和第三屏内容框 */
-.content-box { text-align: center; }
-.main-title { font-size: 4rem; letter-spacing: 8px; color: #fff; margin-bottom: 10px; }
-.sub-title { font-size: 1.2rem; color: #888; }
-.scroll-hint { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: #555; font-size: 0.9rem; animation: pulse 2s infinite; }
+.content-box {
+    text-align: left;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(20px) translateX(50px);
+    transition: all 1s ease-out;
+    max-width: 600px;
+}
+
+.content-box.visible {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+}
+
+.main-title {
+    font-size: 3.5rem;
+    letter-spacing: 6px;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.8s ease;
+}
+
+.sub-title {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 30px;
+    transition: all 0.8s ease 0.2s;
+}
+
+.scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #555;
+    font-size: 0.9rem;
+    animation: pulse 2s infinite;
+    z-index: 10;
+}
 
 /* 黑果短剧应用卡片 */
 .app-card {
-    background: linear-gradient(145deg, #151515, #0a0a0a);
-    padding: 50px 40px;
-    border-radius: 24px;
-    text-align: center;
-    border: 1px solid #222;
-    max-width: 500px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: transparent;
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: left;
+    border: none;
+    max-width: 450px;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    opacity: 0;
+    transform: translateY(30px) translateX(50px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
 }
 
-.app-logo { font-size: 60px; margin-bottom: 20px; }
-.app-title { font-size: 2rem; color: #d4af37; margin-bottom: 15px; }
-.app-desc { color: #aaa; line-height: 1.6; margin-bottom: 30px; }
+.app-card.visible {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) translateX(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) translateX(0) scale(1);
+    }
+}
+
+.app-logo {
+    font-size: 60px;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.app-title {
+    font-size: 2rem;
+    color: #d4af37;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.app-desc {
+    color: #aaa;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
 
 /* 按钮样式 */
 .download-btn {
@@ -97,12 +229,151 @@ body::-webkit-scrollbar { display: none; }
     text-decoration: none;
     border-radius: 12px;
     font-weight: bold;
-    transition: transform 0.2s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
-.download-btn:hover { transform: translateY(-3px); }
-.git-btn { background: #222; color: #fff; border: 1px solid #444; }
 
+.download-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+    z-index: -1;
+}
+
+.download-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 25px rgba(212, 175, 55, 0.5);
+}
+
+.download-btn:hover::before {
+    left: 100%;
+}
+
+.git-btn {
+    background: rgba(34, 34, 34, 0.8);
+    color: #fff;
+    border: 1px solid #444;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.git-btn:hover {
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
+
+/* 装饰元素 */
+.decorative-element {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+    z-index: 1;
+}
+
+.decorative-element:nth-child(1) {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.decorative-element:nth-child(2) {
+    width: 200px;
+    height: 200px;
+    bottom: 15%;
+    right: 15%;
+    animation-delay: 2s;
+}
+
+.decorative-element:nth-child(3) {
+    width: 150px;
+    height: 150px;
+    top: 40%;
+    right: 10%;
+    animation-delay: 4s;
+}
+
+/* 动画 */
 @keyframes pulse {
     0%, 100% { opacity: 0.5; transform: translate(-50%, 0); }
     50% { opacity: 1; transform: translate(-50%, 5px); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 2.5rem;
+        letter-spacing: 4px;
+    }
+    
+    .sub-title {
+        font-size: 1rem;
+    }
+    
+    .app-card {
+        padding: 30px 20px;
+        margin: 0 20px;
+    }
+    
+    .app-title {
+        font-size: 1.5rem;
+    }
+    
+    .top-nav {
+        top: 20px;
+        padding: 4px;
+    }
+    
+    .nav-btn {
+        padding: 6px 16px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+    
+    .decorative-element {
+        display: none;
+    }
 }
