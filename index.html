@@ -3,888 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>项目开发管理进度看板</title>
+    <title>开发者主页</title>
     <style>
-        * {
+        /* 基础页面设置：暗黑风格 */
+        body {
+            background-color: #0d0d0d;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #64748b;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --light-bg: #f8fafc;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --border-radius-sm: 4px;
-            --border-radius-md: 8px;
-            --border-radius-lg: 12px;
-            --transition: all 0.2s ease-in-out;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
-        
+
+        /* 主容器 */
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: var(--border-radius-md);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary {
-            background-color: white;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-        
-        .btn-secondary:hover {
-            background-color: #f1f5f9;
-            border-color: #cbd5e1;
-        }
-        
-        .kanban-board {
-            display: flex;
-            gap: 24px;
-            overflow-x: auto;
-            padding-bottom: 20px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--border-color) transparent;
-        }
-        
-        .kanban-board::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .kanban-board::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        .kanban-board::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 3px;
-        }
-        
-        .kanban-column {
-            flex: 0 0 320px;
-            background-color: #f1f5f9;
-            border-radius: var(--border-radius-lg);
-            padding: 20px;
-            min-height: 600px;
-            transition: var(--transition);
-        }
-        
-        .kanban-column:hover {
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .kanban-column.drag-over {
-            background-color: #e2e8f0;
-            transform: scale(1.01);
-        }
-        
-        .column-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
-        .column-title {
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .column-icon {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        
-        .todo-icon {
-            background-color: #e2e8f0;
-            color: var(--text-secondary);
-        }
-        
-        .in-progress-icon {
-            background-color: #dbeafe;
-            color: var(--primary-color);
-        }
-        
-        .completed-icon {
-            background-color: #d1fae5;
-            color: var(--success-color);
-        }
-        
-        .task-count {
-            background-color: rgba(0, 0, 0, 0.1);
-            color: var(--text-secondary);
-            border-radius: 16px;
-            padding: 2px 10px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .add-task-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 18px;
-            padding: 6px;
-            border-radius: var(--border-radius-sm);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .add-task-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-            color: var(--text-primary);
-        }
-        
-        .task-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius-md);
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            border-left: 4px solid transparent;
-        }
-        
-        .task-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .task-card.dragging {
-            opacity: 0.5;
-            transform: rotate(2deg);
-        }
-        
-        .task-card.priority-high {
-            border-left-color: var(--danger-color);
-        }
-        
-        .task-card.priority-medium {
-            border-left-color: var(--warning-color);
-        }
-        
-        .task-card.priority-low {
-            border-left-color: var(--success-color);
-        }
-        
-        .task-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        .task-description {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-        
-        .task-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .task-assignee {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .assignee-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .task-priority {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-        
-        .priority-high {
-            background-color: #fee2e2;
-            color: var(--danger-color);
-        }
-        
-        .priority-medium {
-            background-color: #fef3c7;
-            color: var(--warning-color);
-        }
-        
-        .priority-low {
-            background-color: #d1fae5;
-            color: var(--success-color);
-        }
-        
-        .task-tags {
-            display: flex;
-            gap: 6px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .task-tag {
-            background-color: #f1f5f9;
-            color: var(--text-secondary);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        
-        .modal-content {
-            background-color: var(--card-bg);
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: var(--border-radius-lg);
             width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow-lg);
-            animation: modalSlideIn 0.3s ease-out;
+            max-width: 800px;
+            padding: 40px 20px;
         }
-        
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+
+        /* 个人介绍区域 */
+        .profile-section {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease;
         }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            padding: 4px;
-            border-radius: var(--border-radius-sm);
-            transition: var(--transition);
-        }
-        
-        .close-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-            color: var(--text-primary);
-        }
-        
-        .form-group {
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #d4af37; /* 黑金风格的金色边框 */
             margin-bottom: 20px;
+            object-fit: cover;
         }
-        
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+
+        .profile-name {
+            font-size: 2em;
+            margin: 0 0 10px 0;
+            letter-spacing: 2px;
         }
-        
-        input[type="text"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            font-size: 14px;
-            transition: var(--transition);
-            font-family: inherit;
+
+        .profile-bio {
+            color: #888888;
+            font-size: 1.1em;
+            margin: 0;
         }
-        
-        input[type="text"]:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+
+        /* 应用卡片网格布局 */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            animation: fadeInUp 1s ease;
         }
-        
-        textarea {
-            resize: vertical;
-            min-height: 100px;
+
+        /* 单个应用卡片样式 */
+        .app-card {
+            background-color: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 卡片悬停特效（跳转感） */
+        .app-card:hover {
+            transform: translateY(-8px);
+            border-color: #d4af37;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.15);
+        }
+
+        .app-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .app-title {
+            color: #d4af37;
+            font-size: 1.3em;
+            margin: 0 0 10px 0;
+        }
+
+        .app-desc {
+            color: #aaaaaa;
+            font-size: 0.9em;
             line-height: 1.5;
+            margin: 0;
         }
-        
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+
+        /* 简单的进场动画 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 13px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .kanban-board {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .kanban-column {
-                flex: 1 1 100%;
-                max-width: 100%;
-                min-height: 400px;
-            }
-            
-            .modal-content {
-                margin: 15% auto;
-                padding: 20px;
-            }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="header">
-            <h1>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="11" x2="8" y2="11"></line>
-                    <line x1="16" y1="16" x2="8" y2="16"></line>
-                    <line x1="10" y1="7" x2="8" y2="7"></line>
-                    <line x1="10" y1="21" x2="8" y2="21"></line>
-                </svg>
-                项目开发管理进度看板
-            </h1>
-            <div class="header-actions">
-                <button class="btn btn-secondary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    筛选
-                </button>
-                <button class="btn btn-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    新建项目
-                </button>
-            </div>
+        <div class="profile-section">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=developer" alt="头像" class="profile-avatar">
+            <h1 class="profile-name">Liang</h1>
+            <p class="profile-bio">独立开发者 | 专注于沉浸式流媒体与应用开发</p>
         </div>
-        
-        <div class="kanban-board">
-            <!-- 待办列 -->
-            <div class="kanban-column" data-status="todo">
-                <div class="column-header">
-                    <div style="display: flex; align-items: center;">
-                        <span class="column-title">
-                            <span class="column-icon todo-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                </svg>
-                            </span>
-                            待办
-                        </span>
-                        <span class="task-count">0</span>
-                    </div>
-                    <button class="add-task-btn" onclick="openAddTaskModal('todo')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        添加任务
-                    </button>
-                </div>
-                <div class="column-content"></div>
-            </div>
+
+        <div class="apps-grid">
             
-            <!-- 进行中列 -->
-            <div class="kanban-column" data-status="in-progress">
-                <div class="column-header">
-                    <div style="display: flex; align-items: center;">
-                        <span class="column-title">
-                            <span class="column-icon in-progress-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                                </svg>
-                            </span>
-                            进行中
-                        </span>
-                        <span class="task-count">0</span>
-                    </div>
-                    <button class="add-task-btn" onclick="openAddTaskModal('in-progress')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        添加任务
-                    </button>
-                </div>
-                <div class="column-content"></div>
-            </div>
-            
-            <!-- 已完成列 -->
-            <div class="kanban-column" data-status="completed">
-                <div class="column-header">
-                    <div style="display: flex; align-items: center;">
-                        <span class="column-title">
-                            <span class="column-icon completed-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </span>
-                            已完成
-                        </span>
-                        <span class="task-count">0</span>
-                    </div>
-                    <button class="add-task-btn" onclick="openAddTaskModal('completed')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        添加任务
-                    </button>
-                </div>
-                <div class="column-content"></div>
-            </div>
+            <a href="http://47.122.119.75" target="_blank" class="app-card">
+                <div class="app-icon">🎬</div>
+                <h2 class="app-title">黑果短剧</h2>
+                <p class="app-desc">私有化短剧平台，将本地短剧库变成专属流媒体。随时随地，高清畅享。</p>
+            </a>
+
+            <a href="#" target="_blank" class="app-card">
+                <div class="app-icon">🚀</div>
+                <h2 class="app-title">待定应用</h2>
+                <p class="app-desc">下一款改变世界的应用正在开发中，敬请期待。</p>
+            </a>
+
+            <a href="https://github.com/2550214996lw-rgb" target="_blank" class="app-card">
+                <div class="app-icon">💻</div>
+                <h2 class="app-title">我的 GitHub</h2>
+                <p class="app-desc">查看我的更多开源项目和技术分享。</p>
+            </a>
+
         </div>
     </div>
-    
-    <!-- 添加任务模态框 -->
-    <div id="addTaskModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">添加任务</h2>
-                <button class="close-btn" onclick="closeAddTaskModal()">&times;</button>
-            </div>
-            <form id="addTaskForm">
-                <input type="hidden" id="taskStatus" value="todo">
-                <div class="form-group">
-                    <label for="taskTitle">任务标题</label>
-                    <input type="text" id="taskTitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="taskDescription">任务描述</label>
-                    <textarea id="taskDescription"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="taskAssignee">负责人</label>
-                    <input type="text" id="taskAssignee">
-                </div>
-                <div class="form-group">
-                    <label for="taskPriority">优先级</label>
-                    <select id="taskPriority">
-                        <option value="low">低</option>
-                        <option value="medium">中</option>
-                        <option value="high">高</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddTaskModal()">取消</button>
-                    <button type="submit" class="btn btn-primary">添加</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <script>
-        // 任务数据
-        let tasks = [];
-        let taskIdCounter = 1;
-        
-        // 初始化页面
-        function init() {
-            loadTasks();
-            // 如果没有任务，添加一些示例任务
-            if (tasks.length === 0) {
-                addSampleTasks();
-            }
-            renderTasks();
-            setupDragAndDrop();
-        }
-        
-        // 添加示例任务
-        function addSampleTasks() {
-            const sampleTasks = [
-                {
-                    id: taskIdCounter++,
-                    title: '设计新的用户界面',
-                    description: '根据最新的设计规范，重新设计登录页面和仪表盘界面',
-                    assignee: '张三',
-                    priority: 'high',
-                    status: 'todo'
-                },
-                {
-                    id: taskIdCounter++,
-                    title: '实现用户认证功能',
-                    description: '集成OAuth 2.0认证，支持第三方登录',
-                    assignee: '李四',
-                    priority: 'high',
-                    status: 'in-progress'
-                },
-                {
-                    id: taskIdCounter++,
-                    title: '优化数据库查询',
-                    description: '分析慢查询，添加适当的索引',
-                    assignee: '王五',
-                    priority: 'medium',
-                    status: 'todo'
-                },
-                {
-                    id: taskIdCounter++,
-                    title: '编写API文档',
-                    description: '使用Swagger生成API文档',
-                    assignee: '赵六',
-                    priority: 'low',
-                    status: 'completed'
-                },
-                {
-                    id: taskIdCounter++,
-                    title: '测试支付功能',
-                    description: '测试各种支付场景，确保支付流程正常',
-                    assignee: '孙七',
-                    priority: 'medium',
-                    status: 'in-progress'
-                }
-            ];
-            
-            tasks = sampleTasks;
-            saveTasks();
-        }
-        
-        // 从本地存储加载任务
-        function loadTasks() {
-            const savedTasks = localStorage.getItem('kanbanTasks');
-            if (savedTasks) {
-                tasks = JSON.parse(savedTasks);
-                if (tasks.length > 0) {
-                    taskIdCounter = Math.max(...tasks.map(task => task.id)) + 1;
-                }
-            }
-        }
-        
-        // 保存任务到本地存储
-        function saveTasks() {
-            localStorage.setItem('kanbanTasks', JSON.stringify(tasks));
-        }
-        
-        // 渲染任务
-        function renderTasks() {
-            // 清空所有列
-            document.querySelectorAll('.column-content').forEach(column => {
-                column.innerHTML = '';
-            });
-            
-            // 渲染每个任务
-            tasks.forEach(task => {
-                const taskElement = createTaskElement(task);
-                const column = document.querySelector(`.kanban-column[data-status="${task.status}"] .column-content`);
-                if (column) {
-                    column.appendChild(taskElement);
-                }
-            });
-            
-            // 更新任务计数
-            updateTaskCounts();
-        }
-        
-        // 创建任务元素
-        function createTaskElement(task) {
-            const taskCard = document.createElement('div');
-            taskCard.className = `task-card priority-${task.priority}`;
-            taskCard.draggable = true;
-            taskCard.dataset.taskId = task.id;
-            
-            // 负责人首字母
-            const assigneeInitial = task.assignee ? task.assignee.charAt(0).toUpperCase() : '?';
-            
-            // 优先级文本
-            const priorityText = task.priority === 'high' ? '高' : task.priority === 'medium' ? '中' : '低';
-            
-            taskCard.innerHTML = `
-                <div class="task-title">${task.title}</div>
-                <div class="task-description">${task.description || '无描述'}</div>
-                <div class="task-tags">
-                    <span class="task-tag">${task.status === 'todo' ? '待办' : task.status === 'in-progress' ? '进行中' : '已完成'}</span>
-                </div>
-                <div class="task-meta">
-                    <div class="task-assignee">
-                        <span class="assignee-avatar">${assigneeInitial}</span>
-                        <span>${task.assignee || '未分配'}</span>
-                    </div>
-                    <div class="task-priority priority-${task.priority}">
-                        ${priorityText}优先级
-                    </div>
-                </div>
-            `;
-            
-            // 添加拖拽事件
-            taskCard.addEventListener('dragstart', handleDragStart);
-            taskCard.addEventListener('dragend', handleDragEnd);
-            
-            return taskCard;
-        }
-        
-        // 处理拖拽开始
-        function handleDragStart(e) {
-            e.dataTransfer.setData('text/plain', e.target.dataset.taskId);
-            e.target.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-        
-        // 处理拖拽结束
-        function handleDragEnd(e) {
-            e.target.classList.remove('dragging');
-            document.querySelectorAll('.kanban-column').forEach(column => {
-                column.classList.remove('drag-over');
-            });
-        }
-        
-        // 设置拖拽和放置
-        function setupDragAndDrop() {
-            const columns = document.querySelectorAll('.kanban-column');
-            columns.forEach(column => {
-                column.addEventListener('dragover', handleDragOver);
-                column.addEventListener('dragenter', handleDragEnter);
-                column.addEventListener('dragleave', handleDragLeave);
-                column.addEventListener('drop', handleDrop);
-            });
-        }
-        
-        // 处理拖拽经过
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-        }
-        
-        // 处理拖拽进入
-        function handleDragEnter(e) {
-            e.preventDefault();
-            this.classList.add('drag-over');
-        }
-        
-        // 处理拖拽离开
-        function handleDragLeave(e) {
-            this.classList.remove('drag-over');
-        }
-        
-        // 处理放置
-        function handleDrop(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-            
-            const taskId = e.dataTransfer.getData('text/plain');
-            const newStatus = this.dataset.status;
-            
-            // 更新任务状态
-            const taskIndex = tasks.findIndex(task => task.id == taskId);
-            if (taskIndex !== -1) {
-                tasks[taskIndex].status = newStatus;
-                saveTasks();
-                renderTasks();
-            }
-        }
-        
-        // 打开添加任务模态框
-        function openAddTaskModal(status) {
-            document.getElementById('taskStatus').value = status;
-            document.getElementById('addTaskModal').style.display = 'block';
-        }
-        
-        // 关闭添加任务模态框
-        function closeAddTaskModal() {
-            document.getElementById('addTaskModal').style.display = 'none';
-            document.getElementById('addTaskForm').reset();
-        }
-        
-        // 提交添加任务表单
-        document.getElementById('addTaskForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const title = document.getElementById('taskTitle').value;
-            const description = document.getElementById('taskDescription').value;
-            const assignee = document.getElementById('taskAssignee').value;
-            const priority = document.getElementById('taskPriority').value;
-            const status = document.getElementById('taskStatus').value;
-            
-            // 创建新任务
-            const newTask = {
-                id: taskIdCounter++,
-                title,
-                description,
-                assignee,
-                priority,
-                status
-            };
-            
-            // 添加任务到数组
-            tasks.push(newTask);
-            saveTasks();
-            renderTasks();
-            closeAddTaskModal();
-        });
-        
-        // 更新任务计数
-        function updateTaskCounts() {
-            const statuses = ['todo', 'in-progress', 'completed'];
-            statuses.forEach(status => {
-                const count = tasks.filter(task => task.status === status).length;
-                const countElement = document.querySelector(`.kanban-column[data-status="${status}"] .task-count`);
-                if (countElement) {
-                    countElement.textContent = count;
-                }
-            });
-        }
-        
-        // 点击模态框外部关闭
-        window.onclick = function(event) {
-            const modal = document.getElementById('addTaskModal');
-            if (event.target == modal) {
-                closeAddTaskModal();
-            }
-        }
-        
-        // 初始化页面
-        init();
-    </script>
+
 </body>
 </html>
