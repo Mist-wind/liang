@@ -57,50 +57,116 @@
                     <h1 class="main-title">项目进度</h1>
                     <button class="edit-toggle-btn" id="editToggle">编辑模式</button>
                 </div>
-                <div class="progress-list" id="progressList">
-                    <div class="progress-item" data-id="1">
-                        <div class="progress-info">
-                            <h3 class="project-name">黑果短剧</h3>
-                            <p class="project-desc">私有化短剧平台</p>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 85%">
-                                <span class="progress-text">85%</span>
+                <div class="project-tabs" id="projectTabs">
+                    <button class="tab-btn active" data-project="1">黑果短剧</button>
+                    <button class="tab-btn" data-project="2">AI桌面宠物</button>
+                    <button class="tab-btn" data-project="3">新项目</button>
+                </div>
+                <div class="project-details" id="projectDetails">
+                    <div class="project-info">
+                        <div class="info-row">
+                            <div class="info-item">
+                                <span class="info-label">项目名称</span>
+                                <span class="info-value" id="detailProjectName">黑果短剧</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">项目描述</span>
+                                <span class="info-value" id="detailProjectDesc">私有化短剧平台</span>
                             </div>
                         </div>
-                        <div class="progress-actions">
-                            <button class="progress-edit-btn" onclick="editProgress(1)">编辑</button>
-                            <button class="progress-delete-btn" onclick="deleteProgress(1)">删除</button>
+                        <div class="info-row">
+                            <div class="info-item">
+                                <span class="info-label">整体进度</span>
+                                <span class="info-value" id="detailProjectProgress">85%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">负责人</span>
+                                <span class="info-value" id="detailProjectOwner">Liang</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="progress-item" data-id="2">
-                        <div class="progress-info">
-                            <h3 class="project-name">AI桌面宠物</h3>
-                            <p class="project-desc">智能陪伴应用</p>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 45%">
-                                <span class="progress-text">45%</span>
+                    <div class="project-timeline" id="projectTimeline">
+                        <h3>项目阶段</h3>
+                        <div class="timeline-items">
+                            <div class="timeline-item completed">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h4>规划阶段</h4>
+                                    <p>项目需求分析、技术选型</p>
+                                    <span class="timeline-date">2026-03-01</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="progress-actions">
-                            <button class="progress-edit-btn" onclick="editProgress(2)">编辑</button>
-                            <button class="progress-delete-btn" onclick="deleteProgress(2)">删除</button>
+                            <div class="timeline-item completed">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h4>设计阶段</h4>
+                                    <p>UI设计、交互设计</p>
+                                    <span class="timeline-date">2026-03-15</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item active">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h4>开发阶段</h4>
+                                    <p>核心功能开发、API集成</p>
+                                    <span class="timeline-date">2026-04-01</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h4>测试阶段</h4>
+                                    <p>功能测试、性能测试</p>
+                                    <span class="timeline-date">2026-04-30</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h4>上线阶段</h4>
+                                    <p>部署、发布、监控</p>
+                                    <span class="timeline-date">2026-05-15</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="progress-item" data-id="3">
-                        <div class="progress-info">
-                            <h3 class="project-name">新项目</h3>
-                            <p class="project-desc">待定项目</p>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 20%">
-                                <span class="progress-text">20%</span>
+                    <div class="project-tasks" id="projectTasks">
+                        <h3>当前任务</h3>
+                        <div class="tasks-list">
+                            <div class="task-item completed">
+                                <input type="checkbox" checked>
+                                <span>完成用户登录功能</span>
+                            </div>
+                            <div class="task-item completed">
+                                <input type="checkbox" checked>
+                                <span>实现视频播放器</span>
+                            </div>
+                            <div class="task-item active">
+                                <input type="checkbox">
+                                <span>开发推荐算法</span>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox">
+                                <span>优化加载速度</span>
                             </div>
                         </div>
-                        <div class="progress-actions">
-                            <button class="progress-edit-btn" onclick="editProgress(3)">编辑</button>
-                            <button class="progress-delete-btn" onclick="deleteProgress(3)">删除</button>
+                    </div>
+                    <div class="project-progress-summary">
+                        <div class="summary-item">
+                            <span class="summary-number">12</span>
+                            <span class="summary-label">总任务</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">8</span>
+                            <span class="summary-label">已完成</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">4</span>
+                            <span class="summary-label">进行中</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">2</span>
+                            <span class="summary-label">未开始</span>
                         </div>
                     </div>
                 </div>
