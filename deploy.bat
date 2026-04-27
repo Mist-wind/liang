@@ -3,7 +3,7 @@ echo === GitHub Pages Auto Deploy ===
 echo.
 
 git config user.email "2550214996.lw@gmail.com"
-git config user.name "2550214996lw-rgb"
+git config user.name "mist-wind"
 
 echo [1/3] Adding files...
 git add .
