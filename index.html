@@ -30,36 +30,36 @@
             <div class="progress-container">
                 <div class="progress-header">
                     <h1 class="main-title">项目进度</h1>
-                    <div style="display:flex;gap:8px;">
-                        <button class="edit-toggle-btn" id="editProjectBtn" style="display:none;">编辑项目</button>
-                        <button class="edit-toggle-btn" id="editToggle">编辑模式</button>
-                    </div>
+                    <button class="edit-toggle-btn" id="editToggle">编辑模式</button>
                 </div>
-                <div class="project-tabs" id="projectTabs">
-                    <button class="tab-btn active" data-project="1">黑果短剧</button>
-                    <button class="tab-btn" data-project="2">AI桌面宠物</button>
-                    <button class="tab-btn" data-project="3">新项目</button>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <div class="project-tabs" id="projectTabs" style="flex:1;">
+                        <button class="tab-btn active" data-project="1">黑果短剧</button>
+                        <button class="tab-btn" data-project="2">AI桌面宠物</button>
+                        <button class="tab-btn" data-project="3">新项目</button>
+                    </div>
+                    <button class="add-progress-btn" id="addProgressBtn" style="margin-bottom:0;flex-shrink:0;">+ 新建</button>
                 </div>
                 <div class="project-details" id="projectDetails">
                     <div class="project-info">
                         <div class="info-row">
                             <div class="info-item">
                                 <span class="info-label">项目名称</span>
-                                <span class="info-value" id="detailProjectName">黑果短剧</span>
+                                <span class="info-value editable-field" id="detailProjectName" data-field="name">黑果短剧</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">项目描述</span>
-                                <span class="info-value" id="detailProjectDesc">私有化短剧平台</span>
+                                <span class="info-value editable-field" id="detailProjectDesc" data-field="desc">私有化短剧平台</span>
                             </div>
                         </div>
                         <div class="info-row">
                             <div class="info-item">
                                 <span class="info-label">整体进度</span>
-                                <span class="info-value" id="detailProjectProgress">85%</span>
+                                <span class="info-value editable-field" id="detailProjectProgress" data-field="progress">85%</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">负责人</span>
-                                <span class="info-value" id="detailProjectOwner">Liang</span>
+                                <span class="info-value editable-field" id="detailProjectOwner" data-field="owner">Liang</span>
                             </div>
                         </div>
                     </div>

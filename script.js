@@ -315,12 +315,85 @@ function updateProjectDetails(projectId) {
     const project = projectsData.find(p => p.id === projectId);
     if (!project) return;
     
-    document.getElementById('detailProjectName').textContent = project.name;
-    document.getElementById('detailProjectDesc').textContent = project.desc;
-    document.getElementById('detailProjectProgress').textContent = project.progress + '%';
-    document.getElementById('detailProjectOwner').textContent = project.owner;
+    const nameEl = document.getElementById('detailProjectName');
+    const descEl = document.getElementById('detailProjectDesc');
+    const progressEl = document.getElementById('detailProjectProgress');
+    const ownerEl = document.getElementById('detailProjectOwner');
+    
+    nameEl.textContent = project.name;
+    descEl.textContent = project.desc;
+    progressEl.textContent = project.progress + '%';
+    ownerEl.textContent = project.owner;
+    
+    // 设置可编辑字段
+    setupEditableField(nameEl, 'name', projectId);
+    setupEditableField(descEl, 'desc', projectId);
+    setupEditableField(progressEl, 'progress', projectId, true);
+    setupEditableField(ownerEl, 'owner', projectId);
     
     updateTimeline(project.timeline);
+}
+
+// 设置可编辑字段
+function setupEditableField(element, field, projectId, isNumber = false) {
+    element.onclick = function() {
+        if (!progressContainer.classList.contains('edit-mode')) return;
+        
+        const currentValue = element.textContent.replace('%', '');
+        const input = document.createElement(isNumber ? 'input' : 'textarea');
+        
+        if (isNumber) {
+            input.type = 'number';
+            input.min = 0;
+            input.max = 100;
+        } else if (field === 'desc') {
+            input.rows = 2;
+        }
+        
+        input.className = 'inline-edit-input';
+        input.value = currentValue;
+        
+        element.innerHTML = '';
+        element.appendChild(input);
+        input.focus();
+        input.select();
+        
+        function saveEdit() {
+            let newValue = isNumber ? parseInt(input.value) : input.value.trim();
+            
+            if (isNumber && (isNaN(newValue) || newValue < 0 || newValue > 100)) {
+                newValue = projectsData.find(p => p.id === projectId)[field];
+                alert('进度必须在0-100之间');
+            } else if (!isNumber && !newValue) {
+                newValue = projectsData.find(p => p.id === projectId)[field];
+            }
+            
+            const project = projectsData.find(p => p.id === projectId);
+            if (project) {
+                project[field] = newValue;
+                saveProjects();
+                
+                // 更新标签页名称
+                if (field === 'name') {
+                    renderTabs();
+                    currentProjectId = projectId;
+                }
+            }
+            
+            updateProjectDetails(projectId);
+        }
+        
+        input.onblur = saveEdit;
+        input.onkeydown = function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                saveEdit();
+            }
+            if (e.key === 'Escape') {
+                updateProjectDetails(projectId);
+            }
+        };
+    };
 }
 
 // 更新时间线
@@ -384,21 +457,14 @@ function deleteProject(id) {
 
 // 编辑模式切换
 const editToggle = document.getElementById('editToggle');
-const editProjectBtn = document.getElementById('editProjectBtn');
 const progressContainer = document.querySelector('.progress-container');
 
 editToggle.addEventListener('click', function() {
     this.classList.toggle('active');
     progressContainer.classList.toggle('edit-mode');
     this.textContent = this.classList.contains('active') ? '完成编辑' : '编辑模式';
-    editProjectBtn.style.display = this.classList.contains('active') ? 'block' : 'none';
     renderTabs();
     updateProjectDetails(currentProjectId);
-});
-
-// 编辑项目按钮
-editProjectBtn.addEventListener('click', function() {
-    openModal(true);
 });
 
 // 模态框操作

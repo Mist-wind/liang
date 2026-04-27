@@ -458,6 +458,32 @@ body::-webkit-scrollbar { display: none; }
     font-weight: 500;
 }
 
+.editable-field {
+    cursor: default;
+    transition: all 0.2s ease;
+}
+
+.edit-mode .editable-field {
+    cursor: pointer;
+    border-bottom: 1px dashed #d4af37;
+    padding-bottom: 2px;
+}
+
+.edit-mode .editable-field:hover {
+    background: rgba(212, 175, 55, 0.15);
+}
+
+.inline-edit-input {
+    background: rgba(40, 40, 40, 0.9);
+    color: #fff;
+    border: 1px solid #d4af37;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    width: 100%;
+    outline: none;
+}
+
 /* 项目时间线 */
 .project-timeline {
     background: rgba(30, 30, 30, 0.4);
