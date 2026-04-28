@@ -17,182 +17,69 @@ class ParticleText {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.text = text;
-        this.particles = [];
-        this.isAnimating = false;
+        this.opacity = 0;
         this.isVisible = false;
+        this.targetOpacity = 0;
         
         this.resize();
         window.addEventListener('resize', () => this.resize());
         
-        // 初始隐藏
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
     
     resize() {
-        const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width;
-        this.canvas.height = rect.height;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         
         if (this.isVisible) {
-            this.createParticles();
             this.draw();
         }
     }
     
-    createParticles() {
-        this.particles = [];
-        
-        // 创建临时canvas获取文字像素
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        const fontSize = Math.min(this.canvas.width * 0.35, 180);
-        
-        tempCanvas.width = this.canvas.width;
-        tempCanvas.height = this.canvas.height;
-        
-        tempCtx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-        tempCtx.fillStyle = '#fff';
-        tempCtx.textAlign = 'left';
-        tempCtx.textBaseline = 'top';
-        tempCtx.fillText(this.text, 30, this.canvas.height * 0.3);
-        
-        // 获取像素数据
-        const imageData = tempCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-        const data = imageData.data;
-        
-        // 采样间隔（根据屏幕大小调整）
-        const gap = Math.max(3, Math.floor(fontSize / 20));
-        
-        for (let y = 0; y < this.canvas.height; y += gap) {
-            for (let x = 0; x < this.canvas.width; x += gap) {
-                const index = (y * this.canvas.width + x) * 4;
-                if (data[index + 3] > 128) {
-                    this.particles.push({
-                        x: Math.random() * this.canvas.width,
-                        y: Math.random() * this.canvas.height,
-                        targetX: x,
-                        targetY: y,
-                        size: Math.max(1.5, gap * 0.5),
-                        vx: 0,
-                        vy: 0,
-                        opacity: 0
-                    });
-                }
-            }
-        }
-    }
-    
     show() {
-        if (this.isVisible) return;
+        this.opacity = 0;
         this.isVisible = true;
-        this.createParticles();
+        this.targetOpacity = 1;
         this.animate();
     }
     
     hide() {
         if (!this.isVisible) return;
         this.isVisible = false;
-        
-        // 粒子散开动画
-        const animateOut = () => {
-            let allHidden = true;
-            
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            
-            this.particles.forEach(p => {
-                if (p.opacity > 0.01) {
-                    allHidden = false;
-                    
-                    // 向随机方向散开
-                    p.vx += (Math.random() - 0.5) * 2;
-                    p.vy += (Math.random() - 0.5) * 2 - 1;
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.opacity *= 0.95;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    this.ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`;
-                    this.ctx.fill();
-                }
-            });
-            
-            if (!allHidden) {
-                requestAnimationFrame(animateOut);
-            } else {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            }
-        };
-        
-        animateOut();
+        this.targetOpacity = 0;
+        this.animate();
     }
     
     animate() {
-        if (!this.isVisible) return;
+        if (!this.isVisible && this.opacity <= 0.01) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            return;
+        }
         
-        let allArrived = true;
-        const ease = 0.08; // 缓动系数，先快后慢
-        
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.particles.forEach(p => {
-            const dx = p.targetX - p.x;
-            const dy = p.targetY - p.y;
-            
-            // 使用缓动公式实现先快后慢
-            p.vx += dx * ease;
-            p.vy += dy * ease;
-            p.vx *= 0.85; // 阻尼
-            p.vy *= 0.85;
-            p.x += p.vx;
-            p.y += p.vy;
-            
-            // 检查是否到达目标位置
-            if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
-                allArrived = false;
-            }
-            
-            // 渐显
-            if (p.opacity < 1) {
-                p.opacity = Math.min(1, p.opacity + 0.05);
-            }
-            
-            // 绘制粒子（金色）
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`;
-            this.ctx.fill();
-        });
-        
-        if (!allArrived || this.particles.some(p => p.opacity < 1)) {
+        const diff = this.targetOpacity - this.opacity;
+        if (Math.abs(diff) > 0.01) {
+            this.opacity += diff * 0.05;
+            this.draw();
             requestAnimationFrame(() => this.animate());
         } else {
-            // 动画完成后持续绘制静态粒子
-            this.drawStatic();
+            this.opacity = this.targetOpacity;
+            this.draw();
         }
-    }
-    
-    drawStatic() {
-        if (!this.isVisible) return;
-        
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.particles.forEach(p => {
-            this.ctx.beginPath();
-            this.ctx.arc(p.targetX, p.targetY, p.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = '#d4af37';
-            this.ctx.fill();
-        });
     }
     
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.particles.forEach(p => {
-            this.ctx.beginPath();
-            this.ctx.arc(p.targetX, p.targetY, p.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = '#d4af37';
-            this.ctx.fill();
-        });
+        
+        const fontSize = Math.min(this.canvas.width * 0.35, 280);
+        
+        this.ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        this.ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
+        this.ctx.shadowBlur = 10;
+        this.ctx.fillText(this.text, this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.shadowBlur = 0;
     }
 }
 
@@ -319,32 +206,54 @@ scrollContainer.addEventListener('scroll', () => {
         }
     });
 
-    // 更新导航指示器位置
-    updateNavIndicator(currentSection);
+    // 更新导航指示器位置（根据滚动进度）
+    updateNavIndicator(scrollPosition, windowHeight);
 });
 
-// 更新导航指示器位置
-function updateNavIndicator(currentSection) {
+// 更新导航指示器位置（与页面滚动同步）
+function updateNavIndicator(scrollPosition, windowHeight) {
     const indicator = document.querySelector('.nav-indicator');
     const navBtns = document.querySelectorAll('.nav-btn');
+    const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
     
+    if (!indicator || navBtns.length === 0) return;
+    
+    // 计算当前页面索引和滚动进度
+    const currentIndex = Math.floor(scrollPosition / windowHeight);
+    const nextIndex = Math.min(currentIndex + 1, navBtns.length - 1);
+    const progress = (scrollPosition % windowHeight) / windowHeight;
+    
+    // 获取当前和下一个按钮的位置
+    const currentBtn = navBtns[currentIndex];
+    const nextBtn = navBtns[nextIndex];
+    
+    if (!currentBtn) return;
+    
+    const currentBtnRect = currentBtn.getBoundingClientRect();
+    const nextBtnRect = nextBtn ? nextBtn.getBoundingClientRect() : currentBtnRect;
+    
+    // 根据滚动进度插值计算指示器位置和宽度
+    const currentLeft = currentBtnRect.left - navRect.left;
+    const nextLeft = nextBtnRect.left - navRect.left;
+    const currentWidth = currentBtnRect.width;
+    const nextWidth = nextBtnRect.width;
+    
+    // 平滑插值
+    const interpolatedLeft = currentLeft + (nextLeft - currentLeft) * progress;
+    const interpolatedWidth = currentWidth + (nextWidth - currentWidth) * progress;
+    
+    // 更新指示器样式
+    indicator.style.width = `${interpolatedWidth}px`;
+    indicator.style.left = `${interpolatedLeft}px`;
+    indicator.style.top = '6px';
+    
+    // 更新按钮激活状态
     navBtns.forEach(btn => {
         btn.classList.remove('active');
-        if (btn.getAttribute('data-target') === currentSection) {
+        if (btn === currentBtn) {
             btn.classList.add('active');
         }
     });
-    
-    const activeBtn = document.querySelector(`.nav-btn[data-target="${currentSection}"]`);
-    
-    if (indicator && activeBtn) {
-        const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
-        const btnRect = activeBtn.getBoundingClientRect();
-        
-        indicator.style.width = `${btnRect.width}px`;
-        indicator.style.left = `${btnRect.left - navRect.left}px`;
-        indicator.style.top = '6px';
-    }
 }
 
 // 初始化导航指示器
