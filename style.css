@@ -75,6 +75,7 @@ body::-webkit-scrollbar { display: none; }
     background: linear-gradient(135deg, #d4af37, #b8860b);
     border-radius: 50px;
     z-index: 0;
+    cursor: grab;
 }
 
 /* 导航按钮默认状态 */
@@ -140,11 +141,11 @@ body::-webkit-scrollbar { display: none; }
 }
 
 #particleCanvas {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
     z-index: 1;
 }

@@ -70,7 +70,7 @@ class ParticleText {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        const fontSize = Math.min(this.canvas.width * 0.35, 280);
+        const fontSize = Math.min(this.canvas.width * 0.15, 120);
         
         this.ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
         this.ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
@@ -210,8 +210,12 @@ scrollContainer.addEventListener('scroll', () => {
     updateNavIndicator(scrollPosition, windowHeight);
 });
 
+let isIndicatorDragging = false;
+
 // 更新导航指示器位置（与页面滚动同步）
 function updateNavIndicator(scrollPosition, windowHeight) {
+    if (isIndicatorDragging) return;
+    
     const indicator = document.querySelector('.nav-indicator');
     const navBtns = document.querySelectorAll('.nav-btn');
     const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
@@ -269,6 +273,91 @@ function initNavIndicator() {
         indicator.style.left = `${btnRect.left - navRect.left}px`;
         indicator.style.top = '6px';
     }
+    
+    // 添加拖动功能
+    initIndicatorDrag();
+}
+
+// 导航指示器拖动功能
+function initIndicatorDrag() {
+    const indicator = document.querySelector('.nav-indicator');
+    const nav = document.querySelector('.bottom-nav');
+    const navBtns = document.querySelectorAll('.nav-btn');
+    
+    if (!indicator || !nav || navBtns.length === 0) return;
+    
+    let isDragging = false;
+    let startX = 0;
+    let startLeft = 0;
+    
+    const handleDragStart = (e) => {
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
+        const indicatorRect = indicator.getBoundingClientRect();
+        
+        if (clientX < indicatorRect.left || clientX > indicatorRect.right ||
+            clientY < indicatorRect.top || clientY > indicatorRect.bottom) {
+            return;
+        }
+        
+        isDragging = true;
+        isIndicatorDragging = true;
+        startX = clientX;
+        startLeft = parseFloat(indicator.style.left) || 0;
+        document.addEventListener('mousemove', handleDrag);
+        document.addEventListener('mouseup', handleDragEnd);
+        document.addEventListener('touchmove', handleDrag);
+        document.addEventListener('touchend', handleDragEnd);
+    };
+    
+    const handleDrag = (e) => {
+        if (!isDragging) return;
+        
+        const clientX = e.clientX || e.touches[0].clientX;
+        const deltaX = clientX - startX;
+        let newLeft = startLeft + deltaX;
+        
+        const navRect = nav.getBoundingClientRect();
+        const maxLeft = navRect.width - parseFloat(indicator.style.width);
+        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+        
+        indicator.style.left = `${newLeft}px`;
+        
+        const progress = newLeft / maxLeft;
+        const totalScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+        smoothScroll.scrollTo(progress * totalScroll);
+    };
+    
+    const handleDragEnd = () => {
+        isDragging = false;
+        isIndicatorDragging = false;
+        dragLayer.style.cursor = 'grab';
+        smoothScroll.currentScroll = smoothScroll.targetScroll;
+        scrollContainer.scrollTop = smoothScroll.targetScroll;
+        
+        const navRect = nav.getBoundingClientRect();
+        const maxLeft = navRect.width - parseFloat(indicator.style.width);
+        const currentLeft = parseFloat(indicator.style.left);
+        const progress = currentLeft / maxLeft;
+        const windowHeight = window.innerHeight;
+        const currentIndex = Math.floor(progress * (navBtns.length - 1));
+        const nextIndex = Math.min(currentIndex + 1, navBtns.length - 1);
+        const btnProgress = (progress * (navBtns.length - 1)) % 1;
+        
+        const currentBtnRect = navBtns[currentIndex].getBoundingClientRect();
+        const nextBtnRect = navBtns[nextIndex].getBoundingClientRect();
+        const finalLeft = (currentBtnRect.left - navRect.left) + (nextBtnRect.left - navRect.left - (currentBtnRect.left - navRect.left)) * btnProgress;
+        
+        indicator.style.left = `${finalLeft}px`;
+        
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', handleDragEnd);
+        document.removeEventListener('touchmove', handleDrag);
+        document.removeEventListener('touchend', handleDragEnd);
+    };
+    
+    nav.addEventListener('mousedown', handleDragStart);
+    nav.addEventListener('touchstart', handleDragStart, { passive: true });
 }
 
 // ======== 平滑滚动系统（先快后慢）=====
