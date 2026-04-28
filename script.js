@@ -319,14 +319,48 @@ scrollContainer.addEventListener('scroll', () => {
         }
     });
 
-    // 移除所有按钮的高亮，给当前区域对应的按钮加上高亮
+    // 更新导航指示器位置
+    updateNavIndicator(currentSection);
+});
+
+// 更新导航指示器位置
+function updateNavIndicator(currentSection) {
+    const indicator = document.querySelector('.nav-indicator');
+    const navBtns = document.querySelectorAll('.nav-btn');
+    
     navBtns.forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-target') === currentSection) {
             btn.classList.add('active');
         }
     });
-});
+    
+    const activeBtn = document.querySelector(`.nav-btn[data-target="${currentSection}"]`);
+    
+    if (indicator && activeBtn) {
+        const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
+        const btnRect = activeBtn.getBoundingClientRect();
+        
+        indicator.style.width = `${btnRect.width}px`;
+        indicator.style.left = `${btnRect.left - navRect.left}px`;
+        indicator.style.top = '6px';
+    }
+}
+
+// 初始化导航指示器
+function initNavIndicator() {
+    const indicator = document.querySelector('.nav-indicator');
+    const activeBtn = document.querySelector('.nav-btn.active');
+    
+    if (indicator && activeBtn) {
+        const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
+        const btnRect = activeBtn.getBoundingClientRect();
+        
+        indicator.style.width = `${btnRect.width}px`;
+        indicator.style.left = `${btnRect.left - navRect.left}px`;
+        indicator.style.top = '6px';
+    }
+}
 
 // ======== 平滑滚动系统（先快后慢）=====
 class SmoothScroll {
@@ -426,6 +460,9 @@ function init() {
         }
     }, 500);
     
+    // 初始化导航指示器
+    setTimeout(initNavIndicator, 100);
+    
     // 触发一次滚动事件，激活初始状态
     const event = new Event('scroll');
     scrollContainer.dispatchEvent(event);
@@ -433,14 +470,20 @@ function init() {
     // 为导航按钮添加悬停效果
     navBtns.forEach(btn => {
         btn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px)';
+            this.style.transform = 'translateY(-1px)';
         });
         
         btn.addEventListener('mouseleave', function() {
-            if (!this.classList.contains('active')) {
-                this.style.transform = 'translateY(0)';
-            }
+            this.style.transform = 'translateY(0)';
         });
+    });
+    
+    // 窗口大小改变时重新计算指示器位置
+    window.addEventListener('resize', () => {
+        const activeBtn = document.querySelector('.nav-btn.active');
+        if (activeBtn) {
+            updateNavIndicator(activeBtn.getAttribute('data-target'));
+        }
     });
     
     // 为按钮添加点击波纹效果
