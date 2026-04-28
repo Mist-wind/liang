@@ -18,93 +18,6 @@
         </section>
 
         <section id="section2" class="page-section">
-            <div class="progress-container">
-                <div class="progress-header">
-                    <h1 class="main-title">项目进度</h1>
-                    <button class="edit-toggle-btn" id="editToggle">编辑模式</button>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-                    <div class="project-tabs" id="projectTabs" style="flex:1;">
-                        <button class="tab-btn active" data-project="1">黑果短剧</button>
-                        <button class="tab-btn" data-project="2">AI桌面宠物</button>
-                        <button class="tab-btn" data-project="3">新项目</button>
-                    </div>
-                    <button class="add-progress-btn" id="addProgressBtn" style="margin-bottom:0;flex-shrink:0;">+ 新建</button>
-                </div>
-                <div class="project-details" id="projectDetails">
-                    <div class="project-info">
-                        <div class="info-row">
-                            <div class="info-item">
-                                <span class="info-label">项目名称</span>
-                                <span class="info-value editable-field" id="detailProjectName" data-field="name">黑果短剧</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">项目描述</span>
-                                <span class="info-value editable-field" id="detailProjectDesc" data-field="desc">私有化短剧平台</span>
-                            </div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-item">
-                                <span class="info-label">整体进度</span>
-                                <span class="info-value editable-field" id="detailProjectProgress" data-field="progress">85%</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">负责人</span>
-                                <span class="info-value editable-field" id="detailProjectOwner" data-field="owner">Liang</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-timeline" id="projectTimeline">
-                        <h3>项目阶段</h3>
-                        <div class="timeline-items">
-                            <div class="timeline-item completed">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h4>规划阶段</h4>
-                                    <p>项目需求分析、技术选型</p>
-                                    <span class="timeline-date">2026-03-01</span>
-                                </div>
-                            </div>
-                            <div class="timeline-item completed">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h4>设计阶段</h4>
-                                    <p>UI设计、交互设计</p>
-                                    <span class="timeline-date">2026-03-15</span>
-                                </div>
-                            </div>
-                            <div class="timeline-item active">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h4>开发阶段</h4>
-                                    <p>核心功能开发、API集成</p>
-                                    <span class="timeline-date">2026-04-01</span>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h4>测试阶段</h4>
-                                    <p>功能测试、性能测试</p>
-                                    <span class="timeline-date">2026-04-30</span>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h4>上线阶段</h4>
-                                    <p>部署、发布、监控</p>
-                                    <span class="timeline-date">2026-05-15</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="add-progress-btn" id="addProgressBtn">+ 添加新项目</button>
-            </div>
-        </section>
-
-        <section id="section3" class="page-section">
             <div class="app-card">
                 <div class="app-logo">🎬</div>
                 <h2 class="app-title">黑果短剧</h2>
@@ -113,7 +26,7 @@
             </div>
         </section>
 
-        <section id="section4" class="page-section">
+        <section id="section3" class="page-section">
             <div class="app-card">
                 <div class="app-logo">🐱</div>
                 <h2 class="app-title">AI桌面宠物</h2>
@@ -122,7 +35,7 @@
             </div>
         </section>
 
-        <section id="section5" class="page-section">
+        <section id="section4" class="page-section">
             <div class="content-box">
                 <h1 class="main-title">未来计划</h1>
                 <p class="sub-title">探索更多创新项目，持续提升用户体验</p>
@@ -133,38 +46,12 @@
 
     <nav class="bottom-nav">
         <a href="#section1" class="nav-btn active" data-target="section1">首页</a>
-        <a href="#section2" class="nav-btn" data-target="section2">项目进度</a>
-        <a href="#section3" class="nav-btn" data-target="section3">黑果短剧</a>
-        <a href="#section4" class="nav-btn" data-target="section4">AI桌面宠物</a>
-        <a href="#section5" class="nav-btn" data-target="section5">未来计划</a>
+        <a href="#section2" class="nav-btn" data-target="section2">黑果短剧</a>
+        <a href="#section3" class="nav-btn" data-target="section3">AI桌面宠物</a>
+        <a href="#section4" class="nav-btn" data-target="section4">未来计划</a>
     </nav>
 
-    <div class="modal" id="progressModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">编辑项目</h2>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-form">
-                <div class="form-group">
-                    <label>项目名称</label>
-                    <input type="text" id="projectName" placeholder="输入项目名称">
-                </div>
-                <div class="form-group">
-                    <label>项目描述</label>
-                    <textarea id="projectDesc" placeholder="输入项目描述"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>进度百分比 (0-100)</label>
-                    <input type="number" id="projectProgress" min="0" max="100" placeholder="输入进度百分比">
-                </div>
-                <div class="modal-buttons">
-                    <button class="cancel-btn" onclick="closeModal()">取消</button>
-                    <button class="save-btn" onclick="saveProgress()">保存</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <script src="script.js"></script>
 </body>
