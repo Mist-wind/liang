@@ -1,413 +1,176 @@
-/* 重置默认样式 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
+/* 基础重置 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+    overflow: hidden; 
+    background: #111; 
+    color: #fff; 
 }
 
-body {
-    background-color: #080808;
-    color: #fff;
-    /* 隐藏基础滚动条，做沉浸式效果 */
-    scrollbar-width: none; 
-    overflow: hidden;
-}
-body::-webkit-scrollbar { display: none; }
-
-/* ======== 背景图层 ======== */
-.background-layer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
+/* 舞台容器 */
+.app-container { 
+    position: relative; 
+    width: 100vw; 
+    height: 100vh; 
+    overflow: hidden; 
 }
 
-.background-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.8s ease-out, opacity 0.8s ease;
-    opacity: 1;
-    z-index: -1;
+/* 全屏背景层 */
+.bg-layer { 
+    position: absolute; 
+    inset: 0; 
+    background-size: cover; 
+    background-position: center; 
+    z-index: 1; 
 }
 
-.background-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.4) 100%);
+/* 左侧暗色渐变遮罩 */
+.overlay { 
+    position: absolute; 
+    inset: 0; 
+    background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 45%, rgba(0,0,0,0) 100%); 
+    z-index: 3; 
 }
 
-/* ======== 底部导航栏 ======== */
-.bottom-nav {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(30, 30, 30, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding: 6px;
-    border-radius: 50px;
-    display: flex;
-    gap: 4px;
-    z-index: 1000;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 
-        0 -10px 40px rgba(0,0,0,0.5),
-        0 0 0 1px rgba(255,255,255,0.05) inset;
+/* 左侧文字内容区 */
+.content-layer { 
+    position: absolute; 
+    top: 50%; 
+    left: 8%; 
+    transform: translateY(-50%); 
+    z-index: 4; 
+    width: 40%; 
+    min-width: 400px;
 }
-
-/* 滑动指示器 */
-.nav-indicator {
-    position: absolute;
-    height: calc(100% - 12px);
-    background: linear-gradient(135deg, #d4af37, #b8860b);
-    border-radius: 50px;
-    z-index: 0;
-    cursor: grab;
-}
-
-/* 导航按钮默认状态 */
-.nav-btn {
-    padding: 10px 20px;
-    border-radius: 50px;
-    color: rgba(255, 255, 255, 0.6);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 1;
-    white-space: nowrap;
-    border: 1px solid transparent;
-}
-
-/* 导航按钮悬浮和激活状态 */
-.nav-btn:hover {
-    color: #fff;
-    transform: translateY(-1px);
-}
-
-.nav-btn.active {
-    color: #000;
-    font-weight: 600;
-    text-shadow: none;
-}
-
-
-
-/* ======== 页面主体滚动区 ======== */
-.scroll-container {
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory; /* 实现滚轮一格格吸附的效果 */
-    scroll-behavior: smooth;
-    scrollbar-width: none; 
-    -ms-overflow-style: none;
-}
-
-.scroll-container::-webkit-scrollbar {
-    display: none;
-}
-
-.page-section {
-    height: 100vh;
-    scroll-snap-align: start;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-}
-
-/* 第一屏和第三屏内容框 */
-.content-box {
-    text-align: left;
-    z-index: 10;
-    opacity: 1;
-    max-width: 600px;
-    position: relative;
-}
-
-#particleCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 1;
-}
-
-#particleTitle {
-    opacity: 0;
-    position: relative;
-    z-index: 2;
-}
-
-.main-title {
-    font-size: 3.5rem;
-    letter-spacing: 6px;
-    color: #fff;
+.content-layer h2 {
+    font-size: 1.2rem;
+    color: #ffaa00;
     margin-bottom: 10px;
-    text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    transition: all 0.8s ease;
+    letter-spacing: 2px;
 }
-
-.sub-title {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 30px;
-    transition: all 0.8s ease 0.2s;
+.content-layer h1 { 
+    font-size: 5rem; 
+    line-height: 1.1; 
+    margin-bottom: 20px; 
+    font-weight: 800;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
-
-.scroll-hint {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #555;
-    font-size: 0.9rem;
-    animation: pulse 2s infinite;
-    z-index: 10;
-}
-
-/* 黑果短剧应用卡片 */
-.app-card {
-    background: transparent;
-    padding: 40px 30px;
-    border-radius: 20px;
-    text-align: left;
-    border: none;
-    max-width: 450px;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    opacity: 0;
-    transform: translateY(30px) translateX(50px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 10;
-}
-
-.app-card.visible {
-    opacity: 1;
-    transform: translateY(0) translateX(0);
-    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px) translateX(50px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) translateX(0) scale(1);
-    }
-}
-
-.app-logo {
-    font-size: 60px;
-    margin-bottom: 20px;
-    animation: float 3s ease-in-out infinite;
-}
-
-.app-title {
-    font-size: 2rem;
-    color: #d4af37;
-    margin-bottom: 15px;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-}
-
-.app-desc {
-    color: #aaa;
+.content-layer p { 
+    font-size: 1.1rem; 
+    margin-bottom: 40px; 
+    opacity: 0.85; 
     line-height: 1.6;
-    margin-bottom: 30px;
+    min-height: 90px;
 }
-
-/* 按钮样式 */
-.download-btn {
-    display: inline-block;
-    padding: 15px 30px;
-    background: linear-gradient(135deg, #d4af37, #b8860b);
-    color: #000;
-    text-decoration: none;
-    border-radius: 12px;
+.explore-btn { 
+    padding: 15px 40px; 
+    font-size: 1rem; 
     font-weight: bold;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    color: #fff; 
+    background: rgba(255,255,255,0.1); 
+    border: 1px solid rgba(255,255,255,0.3); 
+    border-radius: 30px; 
+    cursor: pointer; 
+    backdrop-filter: blur(10px); 
+    transition: all 0.3s ease; 
+}
+.explore-btn:hover { 
+    background: #fff; 
+    color: #000;
 }
 
-.download-btn::before {
-    content: '';
+/* 右下角卡片组 (堆叠容器) */
+.cards-wrapper { 
+    position: absolute; 
+    bottom: 80px; 
+    /* 既然向右堆叠，增加 right 的值，给右侧留出空间防止超出屏幕 */
+    right: 250px; 
+    width: 220px; 
+    height: 330px; 
+    z-index: 10; 
+}
+
+/* 堆叠卡片基础样式 */
+.card { 
+    position: absolute; 
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%; 
+    border-radius: 20px; 
+    overflow: hidden; 
+    /* 阴影改到右侧，增强从左向右的立体感 */
+    box-shadow: 15px 0 30px rgba(0,0,0,0.4); 
+    /* ★ 关键修改：缩放基准点设在左侧，这样缩小的时候是向右缩 */
+    transform-origin: left center; 
+}
+
+/* 最顶层的卡片样式 */
+.card.top-card {
+    cursor: pointer;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6); /* 顶层阴影加深一点 */
+}
+.card.top-card:hover img {
+    transform: scale(1.05);
+}
+
+.card img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: transform 0.5s ease;
+}
+.card-info { 
+    position: absolute; 
+    bottom: 0; left: 0; right: 0; 
+    padding: 20px; 
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); 
+}
+.card-info h3 { 
+    font-size: 1.2rem; 
+    margin-bottom: 5px; 
+}
+.card-info p { 
+    font-size: 0.85rem; 
+    color: #aaa;
+}
+
+/* 动画过渡用的克隆体 */
+.fullscreen-clone { 
+    position: fixed; 
+    z-index: 2; 
+    object-fit: cover; 
+    pointer-events: none; 
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+/* 底部中央控制按钮 */
+.slider-controls {
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-    z-index: -1;
+    bottom: 60px;
+    left: 45%; /* 放在偏中央位置，你可以微调这个百分比 */
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 10;
 }
 
-.download-btn:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 12px 25px rgba(212, 175, 55, 0.5);
-}
-
-.download-btn:hover::before {
-    left: 100%;
-}
-
-.git-btn {
-    background: rgba(34, 34, 34, 0.8);
-    color: #fff;
-    border: 1px solid #444;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-}
-
-.git-btn:hover {
-    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
-}
-
-/* 装饰元素 */
-.decorative-element {
-    position: absolute;
+.ctrl-btn {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
-    animation: float 6s ease-in-out infinite;
-    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px); /* 毛玻璃效果 */
+    transition: all 0.3s ease;
 }
 
-.decorative-element:nth-child(1) {
-    width: 300px;
-    height: 300px;
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
-}
-
-.decorative-element:nth-child(2) {
-    width: 200px;
-    height: 200px;
-    bottom: 15%;
-    right: 15%;
-    animation-delay: 2s;
-}
-
-.decorative-element:nth-child(3) {
-    width: 150px;
-    height: 150px;
-    top: 40%;
-    right: 10%;
-    animation-delay: 4s;
-}
-
-/* 动画 */
-@keyframes pulse {
-    0%, 100% { opacity: 0.5; transform: translate(-50%, 0); }
-    50% { opacity: 1; transform: translate(-50%, 5px); }
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .main-title {
-        font-size: 2.5rem;
-        letter-spacing: 4px;
-    }
-    
-    .sub-title {
-        font-size: 1rem;
-    }
-    
-    .app-card {
-        padding: 30px 20px;
-        margin: 0 20px;
-    }
-    
-    .app-title {
-        font-size: 1.5rem;
-    }
-    
-    .bottom-nav {
-        bottom: 15px;
-        padding: 6px 10px;
-        gap: 3px;
-        max-width: 95vw;
-        overflow-x: auto;
-    }
-    
-    .nav-btn {
-        padding: 6px 14px;
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 480px) {
-    .main-title {
-        font-size: 2rem;
-        letter-spacing: 2px;
-    }
-    
-    .decorative-element {
-        display: none;
-    }
-
-    .bottom-nav {
-        bottom: 10px;
-        border-radius: 30px;
-        justify-content: center;
-    }
-
-    .nav-btn {
-        padding: 8px 12px;
-        font-size: 11px;
-        white-space: nowrap;
-    }
-
+.ctrl-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
 }

@@ -3,57 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liang | 沉浸式作品集</title>
+    <title>沉浸式项目画廊 - 堆叠版</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
+    <div class="app-container">
+        <div class="bg-layer" id="bg-layer"></div>
+        <div class="overlay"></div>
 
-    <main class="scroll-container">
-        
-        <section id="section1" class="page-section">
-            <div class="content-box">
-                <h1 class="main-title" id="particleTitle">LIANG</h1>
-                <canvas id="particleCanvas"></canvas>
+        <div class="content-layer">
+            <h2 id="sub-title">FEATURED PROJECT</h2>
+            <h1 id="main-title">标题加载中</h1>
+            <p id="main-desc">描述加载中...</p>
+            <button class="explore-btn">查看详情</button>
+        </div>
+        <div class="slider-controls">
+            <button id="prev-btn" class="ctrl-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button id="next-btn" class="ctrl-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+        <div class="cards-wrapper" id="cards-wrapper">
             </div>
-        </section>
+    </div>
 
-        <section id="section2" class="page-section">
-            <div class="app-card">
-                <div class="app-logo">🎬</div>
-                <h2 class="app-title">黑果短剧</h2>
-                <p class="app-desc">私有化短剧平台，本地短剧库变专属流媒体</p>
-                <a href="http://47.122.119.75" target="_blank" class="download-btn">下载 Android 客户端</a>
-            </div>
-        </section>
-
-        <section id="section3" class="page-section">
-            <div class="app-card">
-                <div class="app-logo">🐱</div>
-                <h2 class="app-title">AI桌面宠物</h2>
-                <p class="app-desc">智能陪伴，个性化互动，让桌面更有趣</p>
-                <a href="#" target="_blank" class="download-btn git-btn">了解更多</a>
-            </div>
-        </section>
-
-        <section id="section4" class="page-section">
-            <div class="content-box">
-                <h1 class="main-title">未来计划</h1>
-                <p class="sub-title">探索更多创新项目，持续提升用户体验</p>
-            </div>
-        </section>
-
-    </main>
-
-    <nav class="bottom-nav">
-        <div class="nav-indicator"></div>
-        <a href="#section1" class="nav-btn active" data-target="section1">首页</a>
-        <a href="#section2" class="nav-btn" data-target="section2">黑果短剧</a>
-        <a href="#section3" class="nav-btn" data-target="section3">桌面宠物</a>
-        <a href="#section4" class="nav-btn" data-target="section4">未来计划</a>
-    </nav>
-
-
-
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

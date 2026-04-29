@@ -1,534 +1,253 @@
-// 获取所有导航按钮和所有页面区块
-const navBtns = document.querySelectorAll('.nav-btn');
-const sections = document.querySelectorAll('.page-section');
-const scrollContainer = document.querySelector('.scroll-container');
-
-// 背景图片数组 - 四个图片对应四个页面
-const backgroundImages = [
-    '首页.png',
-    '黑果短剧.png',
-    '桌面宠物.png',
-    '更多.png'
+// 数据结构
+const projects = [
+    { img: '建筑学姐-AI生图平台.png', title: '建筑学姐', subtitle: 'AI 生图平台', desc: '专为建筑设计打造的 AI 绘图平台。一键将线稿转化为逼真效果图，释放你的设计灵感，提升工作效率。' },
+    { img: '桌面宠物-AI电子宠物.png', title: '桌面宠物', subtitle: 'AI 电子宠物', desc: '不仅是桌面挂件，更是懂你的 AI 伴侣。具备情感交互能力，陪伴你工作学习的每一个枯燥瞬间。' },
+    { img: '黑果短剧-短剧平台.png', title: '黑果短剧', subtitle: '泛娱乐内容社区', desc: '海量热门短剧一网打尽。沉浸式的全屏观影体验，碎片化时间也能享受跌宕起伏的精彩剧情。' },
+    { img: '首页个人介绍.png', title: '个人主页', subtitle: '数字名片', desc: '极简而充满科技感的个人展示空间。全方位呈现你的作品、履历与才华，打造专属的数字品牌。' },
+    { img: '敬请期待.png', title: '敬请期待', subtitle: 'COMING SOON', desc: '更多充满想象力的创新产品正在实验室中孵化。保持关注，我们将持续为你带来惊喜。' }
 ];
 
-// ======== 粒子文字效果 ========
-class ParticleText {
-    constructor(canvas, text) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.text = text;
-        this.opacity = 0;
-        this.isVisible = false;
-        this.targetOpacity = 0;
-        
-        this.resize();
-        window.addEventListener('resize', () => this.resize());
-        
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-    
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        
-        if (this.isVisible) {
-            this.draw();
-        }
-    }
-    
-    show() {
-        this.opacity = 0;
-        this.isVisible = true;
-        this.targetOpacity = 1;
-        this.animate();
-    }
-    
-    hide() {
-        if (!this.isVisible) return;
-        this.isVisible = false;
-        this.targetOpacity = 0;
-        this.animate();
-    }
-    
-    animate() {
-        if (!this.isVisible && this.opacity <= 0.01) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            return;
-        }
-        
-        const diff = this.targetOpacity - this.opacity;
-        if (Math.abs(diff) > 0.01) {
-            this.opacity += diff * 0.05;
-            this.draw();
-            requestAnimationFrame(() => this.animate());
-        } else {
-            this.opacity = this.targetOpacity;
-            this.draw();
-        }
-    }
-    
-    draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        const fontSize = Math.min(this.canvas.width * 0.15, 120);
-        
-        this.ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-        this.ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
-        this.ctx.shadowBlur = 10;
-        this.ctx.fillText(this.text, this.canvas.width / 2, this.canvas.height / 2);
-        this.ctx.shadowBlur = 0;
-    }
-}
+let currentIndex = 0;
+let isAnimating = false; // 锁回来了，保证动画稳定
 
-// 初始化粒子文字
-const particleCanvas = document.getElementById('particleCanvas');
-const particleTitle = document.getElementById('particleTitle');
-const particleText = new ParticleText(particleCanvas, particleTitle.textContent);
+// DOM 节点获取
+const bgLayer = document.getElementById('bg-layer');
+const mainTitle = document.getElementById('main-title');
+const subTitle = document.getElementById('sub-title');
+const mainDesc = document.getElementById('main-desc');
+const cardsWrapper = document.getElementById('cards-wrapper');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
 
-// 创建背景图层 - 实现连续滚动效果
-function createBackgroundLayer() {
-    const backgroundLayer = document.createElement('div');
-    backgroundLayer.className = 'background-layer';
-    backgroundLayer.style.zIndex = '-1';
-    
-    // 创建一个容器来容纳所有背景图片
-    const backgroundContainer = document.createElement('div');
-    backgroundContainer.style.position = 'absolute';
-    backgroundContainer.style.top = '0';
-    backgroundContainer.style.left = '0';
-    backgroundContainer.style.width = '100%';
-    backgroundContainer.style.height = `${backgroundImages.length * 100}vh`;
-    backgroundContainer.style.transition = 'transform 0.1s ease-out';
-    backgroundContainer.style.zIndex = '-2';
-    
-    // 创建每个背景图片
-    backgroundImages.forEach((image, index) => {
-        const bgImage = document.createElement('div');
-        bgImage.style.position = 'absolute';
-        bgImage.style.top = `${index * 100}vh`;
-        bgImage.style.left = '0';
-        bgImage.style.width = '100%';
-        bgImage.style.height = '100vh';
-        bgImage.style.backgroundImage = `url(${image})`;
-        bgImage.style.backgroundSize = 'cover';
-        bgImage.style.backgroundPosition = 'center';
-        backgroundContainer.appendChild(bgImage);
-    });
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'background-overlay';
-    
-    backgroundLayer.appendChild(backgroundContainer);
-    backgroundLayer.appendChild(overlay);
-    document.body.insertBefore(backgroundLayer, document.body.firstChild);
-    
-    return backgroundContainer;
-}
-
-const backgroundContainer = createBackgroundLayer();
-let currentImageIndex = 0;
-let lastSectionIndex = 0;
-
-// 添加装饰元素
-function addDecorativeElements() {
-    sections.forEach(section => {
-        for (let i = 0; i < 3; i++) {
-            const element = document.createElement('div');
-            element.className = 'decorative-element';
-            section.appendChild(element);
-        }
-    });
-}
-
-addDecorativeElements();
-
-// 监听容器的滚动事件
-scrollContainer.addEventListener('scroll', () => {
-    let currentSection = '';
-    let scrollPosition = scrollContainer.scrollTop;
-    let windowHeight = window.innerHeight;
-
-    // 实时更新背景容器的位置，实现连续滚动效果（带缓动）
-    backgroundContainer.style.transform = `translateY(-${scrollPosition}px)`;
-
-    // 判断当前滚动到了哪个区域
-    sections.forEach((section, index) => {
-        const sectionTop = section.offsetTop;
-        
-        // 如果页面滚动到了新的区块
-        if (scrollContainer.scrollTop >= sectionTop - 50 && scrollContainer.scrollTop < sectionTop + section.offsetHeight - 50) {
-            if (currentSection !== section.getAttribute('id')) {
-                currentSection = section.getAttribute('id');
-                currentImageIndex = index;
-                
-                // 处理粒子动画：离开首页时隐藏，进入首页时显示
-                if (lastSectionIndex === 0 && index !== 0) {
-                    // 离开首页
-                    particleText.hide();
-                } else if (lastSectionIndex !== 0 && index === 0) {
-                    // 进入首页
-                    particleText.show();
-                }
-                
-                lastSectionIndex = index;
-            }
-            
-            // 激活当前区域的元素动画
-            const contentBox = section.querySelector('.content-box');
-            const appCard = section.querySelector('.app-card');
-            const progressContainer = section.querySelector('.progress-container');
-            
-            if (contentBox && index !== 0) {
-                contentBox.classList.add('visible');
-            }
-            if (appCard) {
-                appCard.classList.add('visible');
-            }
-            if (progressContainer) {
-                progressContainer.classList.add('visible');
-            }
-            
-            // 首页特殊处理：显示粒子文字
-            if (index === 0 && contentBox) {
-                contentBox.classList.add('visible');
-            }
-        } else if (scrollContainer.scrollTop < sectionTop - 50 || scrollContainer.scrollTop >= sectionTop + section.offsetHeight - 50) {
-            // 离开该区域时移除可见状态（除了首页的粒子）
-            if (index === 0) {
-                const contentBox = section.querySelector('.content-box');
-                if (contentBox) {
-                    contentBox.classList.remove('visible');
-                }
-            }
-        }
-    });
-
-    // 更新导航指示器位置（根据滚动进度）
-    updateNavIndicator(scrollPosition, windowHeight);
-});
-
-let isIndicatorDragging = false;
-
-// 更新导航指示器位置（与页面滚动同步）
-function updateNavIndicator(scrollPosition, windowHeight) {
-    if (isIndicatorDragging) return;
-    
-    const indicator = document.querySelector('.nav-indicator');
-    const navBtns = document.querySelectorAll('.nav-btn');
-    const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
-    
-    if (!indicator || navBtns.length === 0) return;
-    
-    // 计算当前页面索引和滚动进度
-    const currentIndex = Math.floor(scrollPosition / windowHeight);
-    const nextIndex = Math.min(currentIndex + 1, navBtns.length - 1);
-    const progress = (scrollPosition % windowHeight) / windowHeight;
-    
-    // 获取当前和下一个按钮的位置
-    const currentBtn = navBtns[currentIndex];
-    const nextBtn = navBtns[nextIndex];
-    
-    if (!currentBtn) return;
-    
-    const currentBtnRect = currentBtn.getBoundingClientRect();
-    const nextBtnRect = nextBtn ? nextBtn.getBoundingClientRect() : currentBtnRect;
-    
-    // 根据滚动进度插值计算指示器位置和宽度
-    const currentLeft = currentBtnRect.left - navRect.left;
-    const nextLeft = nextBtnRect.left - navRect.left;
-    const currentWidth = currentBtnRect.width;
-    const nextWidth = nextBtnRect.width;
-    
-    // 平滑插值
-    const interpolatedLeft = currentLeft + (nextLeft - currentLeft) * progress;
-    const interpolatedWidth = currentWidth + (nextWidth - currentWidth) * progress;
-    
-    // 更新指示器样式
-    indicator.style.width = `${interpolatedWidth}px`;
-    indicator.style.left = `${interpolatedLeft}px`;
-    indicator.style.top = '6px';
-    
-    // 更新按钮激活状态
-    navBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn === currentBtn) {
-            btn.classList.add('active');
-        }
-    });
-}
-
-// 初始化导航指示器
-function initNavIndicator() {
-    const indicator = document.querySelector('.nav-indicator');
-    const activeBtn = document.querySelector('.nav-btn.active');
-    
-    if (indicator && activeBtn) {
-        const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
-        const btnRect = activeBtn.getBoundingClientRect();
-        
-        indicator.style.width = `${btnRect.width}px`;
-        indicator.style.left = `${btnRect.left - navRect.left}px`;
-        indicator.style.top = '6px';
-    }
-    
-    // 添加拖动功能
-    initIndicatorDrag();
-}
-
-// 导航指示器拖动功能
-function initIndicatorDrag() {
-    const indicator = document.querySelector('.nav-indicator');
-    const nav = document.querySelector('.bottom-nav');
-    const navBtns = document.querySelectorAll('.nav-btn');
-    
-    if (!indicator || !nav || navBtns.length === 0) return;
-    
-    let isDragging = false;
-    let startX = 0;
-    let startLeft = 0;
-    
-    const handleDragStart = (e) => {
-        const clientX = e.clientX || e.touches[0].clientX;
-        const clientY = e.clientY || e.touches[0].clientY;
-        const indicatorRect = indicator.getBoundingClientRect();
-        
-        if (clientX < indicatorRect.left || clientX > indicatorRect.right ||
-            clientY < indicatorRect.top || clientY > indicatorRect.bottom) {
-            return;
-        }
-        
-        isDragging = true;
-        isIndicatorDragging = true;
-        startX = clientX;
-        startLeft = parseFloat(indicator.style.left) || 0;
-        document.addEventListener('mousemove', handleDrag);
-        document.addEventListener('mouseup', handleDragEnd);
-        document.addEventListener('touchmove', handleDrag);
-        document.addEventListener('touchend', handleDragEnd);
-    };
-    
-    const handleDrag = (e) => {
-        if (!isDragging) return;
-        
-        const clientX = e.clientX || e.touches[0].clientX;
-        const deltaX = clientX - startX;
-        let newLeft = startLeft + deltaX;
-        
-        const navRect = nav.getBoundingClientRect();
-        const maxLeft = navRect.width - parseFloat(indicator.style.width);
-        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-        
-        indicator.style.left = `${newLeft}px`;
-        
-        const progress = newLeft / maxLeft;
-        const totalScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-        smoothScroll.scrollTo(progress * totalScroll);
-    };
-    
-    const handleDragEnd = () => {
-        isDragging = false;
-        isIndicatorDragging = false;
-        dragLayer.style.cursor = 'grab';
-        smoothScroll.currentScroll = smoothScroll.targetScroll;
-        scrollContainer.scrollTop = smoothScroll.targetScroll;
-        
-        const navRect = nav.getBoundingClientRect();
-        const maxLeft = navRect.width - parseFloat(indicator.style.width);
-        const currentLeft = parseFloat(indicator.style.left);
-        const progress = currentLeft / maxLeft;
-        const windowHeight = window.innerHeight;
-        const currentIndex = Math.floor(progress * (navBtns.length - 1));
-        const nextIndex = Math.min(currentIndex + 1, navBtns.length - 1);
-        const btnProgress = (progress * (navBtns.length - 1)) % 1;
-        
-        const currentBtnRect = navBtns[currentIndex].getBoundingClientRect();
-        const nextBtnRect = navBtns[nextIndex].getBoundingClientRect();
-        const finalLeft = (currentBtnRect.left - navRect.left) + (nextBtnRect.left - navRect.left - (currentBtnRect.left - navRect.left)) * btnProgress;
-        
-        indicator.style.left = `${finalLeft}px`;
-        
-        document.removeEventListener('mousemove', handleDrag);
-        document.removeEventListener('mouseup', handleDragEnd);
-        document.removeEventListener('touchmove', handleDrag);
-        document.removeEventListener('touchend', handleDragEnd);
-    };
-    
-    nav.addEventListener('mousedown', handleDragStart);
-    nav.addEventListener('touchstart', handleDragStart, { passive: true });
-}
-
-// ======== 平滑滚动系统（先快后慢）=====
-class SmoothScroll {
-    constructor(container) {
-        this.container = container;
-        this.targetScroll = 0;
-        this.currentScroll = 0;
-        this.isScrolling = false;
-        this.ease = 0.075; // 缓动系数
-        
-        this.bindEvents();
-        this.animate();
-    }
-    
-    bindEvents() {
-        // 监听滚轮事件
-        this.container.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            
-            // 计算目标位置
-            const delta = e.deltaY;
-            this.targetScroll += delta;
-            
-            // 限制范围
-            const maxScroll = this.container.scrollHeight - this.container.clientHeight;
-            this.targetScroll = Math.max(0, Math.min(this.targetScroll, maxScroll));
-            
-            this.isScrolling = true;
-        }, { passive: false });
-        
-        // 触摸支持
-        let touchStartY = 0;
-        this.container.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-        
-        this.container.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touchY = e.touches[0].clientY;
-            const deltaY = touchStartY - touchY;
-            touchStartY = touchY;
-            
-            this.targetScroll += deltaY * 1.5;
-            
-            const maxScroll = this.container.scrollHeight - this.container.clientHeight;
-            this.targetScroll = Math.max(0, Math.min(this.targetScroll, maxScroll));
-            
-            this.isScrolling = true;
-        }, { passive: false });
-    }
-    
-    animate() {
-        // 使用缓动公式实现先快后慢
-        const diff = this.targetScroll - this.currentScroll;
-        
-        if (Math.abs(diff) > 0.5) {
-            this.currentScroll += diff * this.ease;
-            this.container.scrollTop = this.currentScroll;
-        } else {
-            this.currentScroll = this.targetScroll;
-            this.container.scrollTop = this.currentScroll;
-            this.isScrolling = false;
-        }
-        
-        requestAnimationFrame(() => this.animate());
-    }
-    
-    scrollTo(position) {
-        this.targetScroll = position;
-        this.isScrolling = true;
-    }
-}
-
-// 初始化平滑滚动
-const smoothScroll = new SmoothScroll(scrollContainer);
-
-// 点击导航按钮时，平滑滚动到对应区域
-navBtns.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.preventDefault(); // 阻止默认跳转
-        const targetId = this.getAttribute('data-target');
-        const targetSection = document.getElementById(targetId);
-        
-        // 使用自定义平滑滚动
-        smoothScroll.scrollTo(targetSection.offsetTop);
-    });
-});
-
-// 初始化页面
+// 初始化
 function init() {
-    // 延迟显示首页粒子动画
-    setTimeout(() => {
-        particleText.show();
-        const contentBox = document.querySelector('#section1 .content-box');
-        if (contentBox) {
-            contentBox.classList.add('visible');
-        }
-    }, 500);
-    
-    // 初始化导航指示器
-    setTimeout(initNavIndicator, 100);
-    
-    // 触发一次滚动事件，激活初始状态
-    const event = new Event('scroll');
-    scrollContainer.dispatchEvent(event);
-    
-    // 为导航按钮添加悬停效果
-    navBtns.forEach(btn => {
-        btn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-1px)';
-        });
+    updateMainContent(currentIndex);
+    renderCards();
+}
+
+// 按钮事件绑定
+nextBtn.onclick = () => {
+    // 点击“下一张”等同于点击最前面的卡片
+    const topCard = document.querySelector('.card.top-card');
+    if (topCard) topCard.click();
+};
+
+prevBtn.onclick = () => {
+    // 点击“上一张”触发倒放动画
+    playReverseAnimation();
+};
+
+function updateMainContent(index) {
+    const item = projects[index];
+    bgLayer.style.backgroundImage = `url('${item.img}')`;
+    mainTitle.innerText = item.title;
+    subTitle.innerText = item.subtitle;
+    mainDesc.innerText = item.desc;
+}
+
+function renderCards() {
+    cardsWrapper.innerHTML = '';
+    const visibleCount = Math.min(4, projects.length - 1); 
+
+    for (let i = 1; i <= visibleCount; i++) {
+        let index = (currentIndex + i) % projects.length;
+        let item = projects[index];
+
+        let card = document.createElement('div');
+        card.className = 'card';
         
-        btn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
+        // 确保从左向右堆叠
+        const xOffset = (i - 1) * 70; 
+        const scale = 1 - (i - 1) * 0.08; 
+        const opacity = 1 - (i - 1) * 0.2; 
+        const zIndex = 100 - i; 
+
+        gsap.set(card, {
+            x: xOffset,
+            scale: scale,
+            opacity: opacity,
+            zIndex: zIndex
         });
-    });
-    
-    // 窗口大小改变时重新计算指示器位置
-    window.addEventListener('resize', () => {
-        const activeBtn = document.querySelector('.nav-btn.active');
-        if (activeBtn) {
-            updateNavIndicator(activeBtn.getAttribute('data-target'));
+
+        if (i === 1) {
+            card.classList.add('top-card');
+            card.onclick = () => triggerTransition(card, index);
+        }
+
+        card.innerHTML = `
+            <img src="${item.img}" alt="${item.title}">
+            <div class="card-info">
+                <h3>${item.title}</h3>
+                <p>${item.subtitle}</p>
+            </div>
+        `;
+        cardsWrapper.appendChild(card);
+    }
+}
+
+// 👉 正向动画：卡片放大变成全屏
+function triggerTransition(cardElement, nextIndex) {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    const cardImg = cardElement.querySelector('img');
+    const rect = cardImg.getBoundingClientRect();
+
+    const cloneImg = document.createElement('img');
+    cloneImg.src = projects[nextIndex].img;
+    cloneImg.className = 'fullscreen-clone';
+    cloneImg.style.top = rect.top + 'px';
+    cloneImg.style.left = rect.left + 'px';
+    cloneImg.style.width = rect.width + 'px';
+    cloneImg.style.height = rect.height + 'px';
+    cloneImg.style.borderRadius = '20px';
+    document.body.appendChild(cloneImg);
+
+    cardElement.style.opacity = 0;
+
+    const tl = gsap.timeline({
+        onComplete: () => {
+            currentIndex = nextIndex;
+            updateMainContent(currentIndex); 
+            renderCards();                   
+            gsap.set([subTitle, mainTitle, mainDesc, '.explore-btn'], { x: 0, y: 0, opacity: 1 });
+
+            // 防闪烁淡出
+            gsap.to(cloneImg, {
+                opacity: 0,
+                duration: 0.4, 
+                ease: "power2.out",
+                onComplete: () => {
+                    cloneImg.remove(); 
+                    isAnimating = false; 
+                }
+            });
         }
     });
-    
-    // 为按钮添加点击波纹效果
-    const buttons = document.querySelectorAll('.download-btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.add('ripple');
-            
-            this.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
+
+    // A. 放大
+    tl.to(cloneImg, {
+        top: 0, left: 0,
+        width: '100vw', height: '100vh',
+        borderRadius: 0,
+        duration: 1.2,
+        ease: 'power4.inOut'
+    }, 0);
+
+    // B. 文字消失
+    tl.to([subTitle, mainTitle, mainDesc, '.explore-btn'], {
+        x: -50, 
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.05, 
+        ease: 'power2.in'
+    }, 0);
+
+    // C. 卡片向左推进
+    const allCards = document.querySelectorAll('.card');
+    allCards.forEach((card, i) => {
+        if (i !== 0) { 
+            const targetI = i; 
+            const targetX = (targetI - 1) * 70;
+            const targetScale = 1 - (targetI - 1) * 0.08;
+            const targetOpacity = 1 - (targetI - 1) * 0.2;
+
+            tl.to(card, {
+                x: targetX, scale: targetScale, opacity: targetOpacity,
+                duration: 1.2, ease: 'power4.inOut'
+            }, 0);
+        }
+    });
+
+    // D. 新文字滑入
+    tl.call(() => {
+        mainTitle.innerText = projects[nextIndex].title;
+        subTitle.innerText = projects[nextIndex].subtitle;
+        mainDesc.innerText = projects[nextIndex].desc;
+        
+        gsap.set([subTitle, mainTitle, mainDesc, '.explore-btn'], { y: 40, x: 0, opacity: 0 });
+        gsap.to([subTitle, mainTitle, mainDesc, '.explore-btn'], {
+            y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power3.out'
         });
+    }, null, 0.6); 
+}
+
+// 👉 倒放动画：全屏缩小变成卡片
+function playReverseAnimation() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    // 计算上一张的索引
+    const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
+
+    // 1. 克隆当前全屏背景，准备缩小
+    const cloneImg = document.createElement('img');
+    cloneImg.src = projects[currentIndex].img;
+    cloneImg.className = 'fullscreen-clone';
+    cloneImg.style.top = '0px';
+    cloneImg.style.left = '0px';
+    cloneImg.style.width = '100vw';
+    cloneImg.style.height = '100vh';
+    cloneImg.style.borderRadius = '0px';
+    document.body.appendChild(cloneImg);
+
+    // 2. 瞬间把底层换成前一张的信息（被克隆图盖住，看不见闪烁）
+    updateMainContent(prevIndex);
+    currentIndex = prevIndex;
+    renderCards(); 
+
+    // 获取新排版中第一张卡片的位置（这是缩小的终点坐标）
+    const topCard = document.querySelector('.card.top-card');
+    const targetRect = topCard.querySelector('img').getBoundingClientRect();
+    topCard.style.opacity = 0; // 隐藏真身，留个空位给克隆体降落
+
+    const tl = gsap.timeline({
+        onComplete: () => {
+            topCard.style.opacity = 1;
+            cloneImg.remove();
+            isAnimating = false;
+        }
+    });
+
+    // A. 背景缩小跌入卡片堆
+    tl.to(cloneImg, {
+        top: targetRect.top + 'px',
+        left: targetRect.left + 'px',
+        width: targetRect.width + 'px',
+        height: targetRect.height + 'px',
+        borderRadius: '20px',
+        duration: 1.2,
+        ease: 'power4.inOut'
+    }, 0);
+
+    // B. 左侧文字切换
+    gsap.set([subTitle, mainTitle, mainDesc, '.explore-btn'], { x: 50, opacity: 0 });
+    tl.to([subTitle, mainTitle, mainDesc, '.explore-btn'], {
+        x: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out'
+    }, 0.4);
+
+    // C. 卡片洗牌效果：所有卡片向后退让出位置
+    const allCards = document.querySelectorAll('.card');
+    allCards.forEach((card, i) => {
+        if (i !== 0) {
+            // 假设它们是从左前方的虚无中冒出来的
+            const startX = (i - 2) * 70; 
+            const startScale = 1 - (i - 2) * 0.08;
+            const startOpacity = 1 - (i - 2) * 0.2;
+
+            const targetX = (i - 1) * 70;
+            const targetScale = 1 - (i - 1) * 0.08;
+            const targetOpacity = 1 - (i - 1) * 0.2;
+
+            gsap.fromTo(card, {
+                x: startX, scale: startScale, opacity: startOpacity
+            }, {
+                x: targetX, scale: targetScale, opacity: targetOpacity,
+                duration: 1.2, ease: 'power4.inOut'
+            }, 0);
+        }
     });
 }
 
-// 添加波纹效果样式
-const style = document.createElement('style');
-style.textContent = `
-    .ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: scale(0);
-        animation: ripple 0.6s linear;
-        pointer-events: none;
-        z-index: 0;
-    }
-    
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// 页面加载完成后初始化
-window.addEventListener('load', init);
+// 启动应用
+init();
